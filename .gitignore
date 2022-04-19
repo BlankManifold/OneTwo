@@ -1,0 +1,22 @@
+
+# Godot-specific ignores
+*.import
+.import/
+export.cfg
+export_presets.cfg
+export/
+android/
+*.log
+*.save
+
+# Mono-specific ignores
+.mono/
+mono_*
+data_*/
+
+# Ignore VSCODE stuff
+.vscode/
+.DS_Store
+
+# Other stuff
+preAssets/
