@@ -17,6 +17,10 @@ namespace Globals
     {
 
     }
+    public enum GRIDSTATE
+    {
+        IDLE, CHECKING_COLOR, SWAPPING, COLLAPSING
+    }
 
     public static class ColorPalette
     {

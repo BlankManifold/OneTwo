@@ -15,3 +15,7 @@ margin_bottom = 15.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="GridTween" type="Tween" parent="."]
+
+[connection signal="tween_all_completed" from="GridTween" to="." method="_on_GridTween_tween_all_completed"]

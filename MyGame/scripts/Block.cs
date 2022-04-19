@@ -11,10 +11,13 @@ namespace Main
         public Vector2 CellCoords
         {
             get { return _cellCoords; }
+            set { _cellCoords = value; }
         }
 
         private Color _color = Globals.ColorPalette.DefaultColor;
         private int _colorId = -1;
+
+        public int ColorId { get { return _colorId; }}
 
         public void Init(Vector2 cellCoords, int cellSize, int cellBorder, int colorId = 0)
         {

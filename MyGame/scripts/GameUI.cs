@@ -5,6 +5,7 @@ namespace Main
 {
     public class GameUI : Control
     {
+        private Label _movesLabel;
         public override void _Ready()
         {
             Main mainNode = (Main)GetTree().GetNodesInGroup("Main")[0];
@@ -14,6 +15,14 @@ namespace Main
             {
                 button.Connect("pressed", mainNode, "_on_GameUI_button_pressed", new Godot.Collections.Array { button.Name });
             }
+
+            _movesLabel = GetNode<Label>("MovesLabel");
+            _movesLabel.Text = $"Moves: 0";
+        }
+
+        public void _on_Grid_UpdateMoves(int moves)
+        {
+            _movesLabel.Text = $"Moves: {moves}";
         }
     }
 }
