@@ -36,7 +36,7 @@ The code is already a mess... `Grid.cs` is the most chaotic scripts ever... too 
 * Some game balancing: supermoves (click one and then swap after one color is shown) count 2 moves
 
 
-## 20/04/22:
+### 20/04/22:
 
 Now the game is quite solid respect different screen size and orientation (portrait for mobile).
 Mechanichs and structure of the core part of the game is done. Now I can focus on graphics, main theme, UI structure, possible menus type, more complex animation/tween and also balancing-difficulty, possible game mode (moves count mode, timed mode, different level, increasing number of color/columns, specific challenges).
@@ -51,8 +51,7 @@ Mechanichs and structure of the core part of the game is done. Now I can focus o
 
 
 
-## 23/04/22
-
+### 23/04/22
 
 Change my mind a few times meanwhile...totally abstract or not? I tried a themed base solution (a stylized building, blocks are windows, and select/match colors corresponds to turning on/off light), but I changed my mind and decided to go fully abstract that closer to what my actual style should (once renormalized my incompetence).
 
