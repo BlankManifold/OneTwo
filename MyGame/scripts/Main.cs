@@ -8,8 +8,9 @@ namespace Main
         private Grid _grid;
         // private GameUI _gameUI;
         private ControlTemplate _settingsControl;
-        private Control _gridControl;
         private ControlTemplate _mainControl;
+        private ControlTemplate _helpControl;
+        private Control _gridControl;
         private Tween _tween;
 
         public override void _Ready()
@@ -18,6 +19,7 @@ namespace Main
             _gridControl = GetNode<Control>("GridLayer/MainControl/GridControl");
             _settingsControl = GetNode<ControlTemplate>("GridLayer/SettingsControl");
             _mainControl = GetNode<ControlTemplate>("GridLayer/MainControl");
+            _helpControl = GetNode<ControlTemplate>("GridLayer/HelpControl");
             _tween = GetNode<Tween>("MainTween");
 
 
@@ -40,7 +42,7 @@ namespace Main
         }
 
 
-        public async void _on_GameUI_button_pressed(string buttonName)
+        public void _on_GameUI_button_pressed(string buttonName)
         {
             switch (buttonName)
             {
@@ -50,36 +52,15 @@ namespace Main
 
                 case "SettingsButton":
 
-                    TweenManager.ChangePanelSwap(_tween, _mainControl, _settingsControl);
-
-                    _mainControl.Visible = true;
-                    _settingsControl.Visible = true;
-
-                    GD.Print($"{_mainControl.Name}:{_mainControl.GetIndex()}");
-                    GD.Print($"{_settingsControl.Name}:{_settingsControl.GetIndex()}");
-
-                    TweenManager.Start(_tween);
-
-                    GD.Print($"{_mainControl.Name}:{_mainControl.GetIndex()}");
-                    GD.Print($"{_settingsControl.Name}:{_settingsControl.GetIndex()}");
-
-
-                    await ToSignal(_tween, "tween_all_completed");
-
-                    GD.Print($"{_mainControl.Name}:{_mainControl.GetIndex()}");
-                    GD.Print($"{_settingsControl.Name}:{_settingsControl.GetIndex()}");
-
-
-                    _mainControl.UpdateState();
-                    _settingsControl.UpdateState();
-
+                    ChangePanel(_settingsControl, _mainControl);
                     break;
 
                 case "HelpButton":
+                    ChangePanel(_helpControl, _mainControl);
                     break;
             }
         }
-        public async void _on_SettingsControl_button_pressed(string buttonName)
+        public void _on_SettingsControl_button_pressed(string buttonName)
         {
             switch (buttonName)
             {
@@ -87,39 +68,24 @@ namespace Main
                     break;
 
                 case "MusicButton":
+                    break;
 
                 case "BackButton":
-
-
-                    TweenManager.ChangePanelSwap(_tween, _settingsControl, _mainControl);
-                    
-                    _mainControl.Visible = true;
-                    _settingsControl.Visible = true;
-
-                    TweenManager.Start(_tween);
-                    await ToSignal(_tween, "tween_all_completed");
-
-                    _mainControl.UpdateState();
-                    _settingsControl.UpdateState();
-
+                    ChangePanel(_mainControl, _settingsControl);
+                    break;
+            }
+        }
+        public void _on_HelpControl_button_pressed(string buttonName)
+        {
+            switch (buttonName)
+            {
+                case "BackButton":
+                    ChangePanel(_mainControl, _helpControl);
                     break;
             }
         }
 
-        // public override void _Input(InputEvent @event)
-        // {
-        //     if (@event.IsPressed())
-        //     {
-        //         //GD.Print($"LocalPos: {_grid.GetLocalMousePosition()}");
-        //     }
-        // }
-
-        // public void CenterGridPosition()
-        // {
-        //     Vector2 offset = _grid.GridExtent / 2;
-        //     _grid.GlobalPosition = _gameUI.BottomPosition - offset;
-        // }
-
+    
         public void RotateGrid()
         {
             _grid.Rotation = Mathf.Pi;
@@ -128,6 +94,21 @@ namespace Main
         private void UpdateGridInfo()
         {
             Globals.GridInfo.UpdateGridInfo(_grid.GridSize, _grid.CellSize, _grid.CellBorder, _grid.Offset);
+        }
+
+        private async void ChangePanel(ControlTemplate controlIn, ControlTemplate controlOut)
+        {
+            TweenManager.ChangePanelSwap(_tween, controlOut, controlIn);
+
+            controlOut.Visible = true;
+            controlIn.Visible = true;
+
+            TweenManager.Start(_tween);
+
+            await ToSignal(_tween, "tween_all_completed");
+
+            controlOut.UpdateState();
+            controlIn.UpdateState();
         }
 
 

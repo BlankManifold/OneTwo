@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://scripts/Main.cs" type="Script" id=1]
 [ext_resource path="res://scene/SettingsControl.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scene/MainControl.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scene/HelpControl.tscn" type="PackedScene" id=4]
 
 [node name="Main" type="Node2D" groups=["Main"]]
 script = ExtResource( 1 )
@@ -17,6 +18,10 @@ script = ExtResource( 1 )
 margin_left = -540.0
 margin_right = -540.0
 mouse_filter = 0
+
+[node name="HelpControl" parent="GridLayer" instance=ExtResource( 4 )]
+margin_left = 540.0
+margin_right = 540.0
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="."]
 layer = -2
