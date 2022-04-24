@@ -6,14 +6,14 @@
 [node name="GameUI" type="Control" groups=["GameUI"]]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 5.0
-margin_top = -2.0
-margin_right = 5.0
-margin_bottom = -2.0
+rect_pivot_offset = Vector2( -1596, -338 )
+mouse_filter = 2
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+_active = true
+_buttonGroupName = "GameUIButton"
 
 [node name="RestartButton" type="TextureButton" parent="." groups=["GameUIButton"]]
 anchor_left = 0.5
@@ -24,6 +24,34 @@ margin_left = -30.0
 margin_top = -92.0
 margin_right = 34.0
 margin_bottom = -28.0
+texture_normal = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SettingsButton" type="TextureButton" parent="." groups=["GameUIButton"]]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -88.0
+margin_top = -96.0
+margin_right = -24.0
+margin_bottom = -32.0
+texture_normal = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HelpButton" type="TextureButton" parent="." groups=["GameUIButton"]]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -168.0
+margin_top = -96.0
+margin_right = -104.0
+margin_bottom = -32.0
 texture_normal = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

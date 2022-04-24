@@ -67,3 +67,10 @@ Change my mind a few times meanwhile...totally abstract or not? I tried a themed
 * I DON'T KNOW IF THIS METHOD IS GOOD FOR PERFORMANCE, BUT AT LEAST IT WORKS...AT LEAST FOR NOW
 * Now while a tween animation is running you can still play with all the blocks that are not running a animation
 * Created tween animations: swapping, selecting, unselecting, inactivating/switch-off, appering of the grid
+
+
+## 25/04/22
+
+* Created `ControlTemplate`: makes easier to apply tween to control node (some problem if screen is too wide, my game will be played in portrait mode anyways)
+* Created `SettingsControl`, created (but not implemented yet) the connection with `Main` (`_on_SettingsControl_button_pressed`), implemented connection only with `BackButton` 
+* Created a `ChangeControlSwap` animation: same as swap animation between two block but applied to control mode
