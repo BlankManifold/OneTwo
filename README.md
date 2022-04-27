@@ -24,7 +24,6 @@ A simple puzzle game made for [Newbies Game Jam (2022 - 1)](https://itch.io/jam/
 * Created a `RestartButton`: re-randomize the grid
 * Created a `Globals` script containing: `RandomManager` struct, some to be filled `enums`, `ColorPalette` static class
 
-
 ### 19/04/22:
 <img align="right" src="stuffForREADME/update2.gif" width="215">
 
@@ -34,7 +33,6 @@ The code is already a mess... `Grid.cs` is the most chaotic scripts ever... too 
 * Created connection between `Grid` and `GameUI` to update moves counter
 * Added `GRIDSTATE`: basically IDLE versus `Tween`/`Timer` activating
 * Some game balancing: supermoves (click one and then swap after one color is shown) count 2 moves
-
 
 ### 20/04/22:
 
@@ -49,13 +47,11 @@ Mechanichs and structure of the core part of the game is done. Now I can focus o
 * Shifted the `Grid` center to be in the middle of the grid itself -> programmatically calculates this offset and setup all the paramaters that depends on that;  now is easier to rotate the grid 
 * Added some function `Init` to have more control to `Grid` initialization in `Main` 
 
-
-
 ### 23/04/22
 
 Change my mind a few times meanwhile...totally abstract or not? I tried a themed base solution (a stylized building, blocks are windows, and select/match colors corresponds to turning on/off light), but I changed my mind and decided to go fully abstract that closer to what my actual style should (once renormalized my incompetence).
 
-<img align="right" src="stuffForREADME/update3.gif" width="275">
+<img align="right" src="stuffForREADME/update3.gif" width="250">
 
 * Begin to create itch.io page (now draft state)
 * Changes some core mechanics of the game: now matching color blocks don't disappear and blocks don't collapse, instead they become inactive and remain in the grid. This block can be moved/swapped with active blocks.  
@@ -68,9 +64,16 @@ Change my mind a few times meanwhile...totally abstract or not? I tried a themed
 * Now while a tween animation is running you can still play with all the blocks that are not running a animation
 * Created tween animations: swapping, selecting, unselecting, inactivating/switch-off, appering of the grid
 
+### 27/04/22
 
-## 25/04/22
+<img align="right" src="stuffForREADME/update4.gif" width="250">
 
 * Created `ControlTemplate`: makes easier to apply tween to control node (some problem if screen is too wide, my game will be played in portrait mode anyways)
 * Created `SettingsControl`, created (but not implemented yet) the connection with `Main` (`_on_SettingsControl_button_pressed`), implemented connection only with `BackButton` 
 * Created a `ChangeControlSwap` animation: same as swap animation between two block but applied to control mode
+* Created `FakeGrid`: parent of `Grid`, a grid without interaction feature (no input function), used only to recreate some tween animation on it, can create a specific grid based on a fixed color list (and on/off list)
+* Created `HelpControl`: show some tween animations with the rules of the game, composed of a `FakeGrid` (where animations takes place), some button to go to the next/previsous help/tip/rule, a label with some short explanations 
+* Connected `HelpControl` to `Main`
+* Implemented `SaveManager.cs`: save and load highscore, connected with `SettingsControl` and `Grid`
+* Some refactoring
+* Some changes in some specific tween animations
