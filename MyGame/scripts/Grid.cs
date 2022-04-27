@@ -238,6 +238,7 @@ namespace Main
         }
         private void Win()
         {
+            SaveManager.SaveHighscore(_moves);
             Restart();
             return;
         }

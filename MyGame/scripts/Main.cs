@@ -12,6 +12,8 @@ namespace Main
         private HelpControl _helpControl;
         private Control _gridControl;
         private Tween _tween;
+        private int _highscore = -1;
+        private Label _highscoreLabel;
 
         public override void _Ready()
         {
@@ -21,6 +23,14 @@ namespace Main
             _mainControl = GetNode<ControlTemplate>("GridLayer/MainControl");
             _helpControl = GetNode<HelpControl>("GridLayer/HelpControl");
             _tween = GetNode<Tween>("MainTween");
+
+            _highscoreLabel = _settingsControl.GetNode<Label>("HighscoreLabel");
+            _highscore = SaveManager.LoadHighscore();
+
+            if (_highscore != -1)
+            {
+                _highscoreLabel.Text = $"Highscore: {_highscore}";
+            }
 
 
             // PackedScene _gridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
@@ -35,8 +45,8 @@ namespace Main
             _gridControl.AddChild(_grid);
 
             RotateGrid();
-            
-            _helpControl.InstanceGrid(new Vector2(4, 6), new Vector2(64, 64), new Vector2(10, 10), cellRatio, sizeConstraint-50);
+
+            _helpControl.InstanceGrid(new Vector2(4, 6), new Vector2(64, 64), new Vector2(10, 10), cellRatio, sizeConstraint - 50);
 
         }
 
@@ -50,6 +60,12 @@ namespace Main
                     break;
 
                 case "SettingsButton":
+                    _highscore = SaveManager.LoadHighscore();
+                    
+                    if (_highscore != -1)
+                    {
+                        _highscoreLabel.Text = $"Highscore: {_highscore}";
+                    }
 
                     ChangePanel(_settingsControl, _mainControl);
                     break;
@@ -86,7 +102,7 @@ namespace Main
             }
         }
 
-    
+
         public void RotateGrid()
         {
             _grid.Rotation = Mathf.Pi;

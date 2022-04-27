@@ -52,7 +52,6 @@ namespace Main
                 return;
             }
             _color = Globals.ColorPalette.GetColor(_colorId);
-            GetNode<Label>("Label").Text = $"{cellCoords}";
         }
         public void InitColor(int colorId = 0)
         {
