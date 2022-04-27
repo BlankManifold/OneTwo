@@ -6,6 +6,8 @@ namespace Main
     {
         public static Vector2 Zeros = Vector2.Zero;
         public static Vector2 Ones = Vector2.One;
+        public static PackedScene _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
+
         public static float SelectModulate(Tween tween, Block block, float delay)
         {
             float modulateTime = 0.2f;
@@ -30,29 +32,67 @@ namespace Main
 
             return modulateTime + totalDelay;
         }
-        public static float SwitchOffScaleModulate(Tween tween, Block block1, Block block2, float delay)
+        public static float SwitchOffScaleModulate(Tween tween, Block block1, Block block2, float delay, bool toBeRepeated = false)
         {
             float scaleFactor = 1.4f;
-            float scaleTime = 0.5f;
-            float modulateTime = 0.5f;
+            float scaleTime = 0.8f;
+            float modulateTime = 0.8f;
+            float flashModulateTime = 0.7f;
+            float flashScaleTime = 1.0f;
+            float flashScaleFactor = 4f;
+            float overlappingTime = 0.3f;
 
-            tween.InterpolateProperty(block1, "scale", block1.Scale, block1.Scale / scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay);
-            tween.InterpolateProperty(block2, "scale", block2.Scale, block2.Scale / scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay);
 
-            tween.InterpolateProperty(block1, "modulate", block1.Color, Globals.ColorPalette.OffColor, modulateTime, Tween.TransitionType.Linear, delay: delay);
-            tween.InterpolateProperty(block2, "modulate", block1.Color, Globals.ColorPalette.OffColor, modulateTime, Tween.TransitionType.Linear, delay: delay);
+            float totalTime = delay + scaleTime + flashScaleTime - overlappingTime;
 
-            return delay + scaleTime;
+            Block block1Ghost = _blockScene.Instance<Block>();
+            Block block2Ghost = _blockScene.Instance<Block>();
+
+            block1Ghost.Copy(block1);
+            block2Ghost.Copy(block2);
+            block1Ghost.Visible = false;
+            block2Ghost.Visible = false;
+
+            var parent = tween.GetParent();
+
+            parent.AddChild(block1Ghost);
+            parent.AddChild(block2Ghost);
+
+            tween.InterpolateCallback(block1Ghost, delay, "set", "visible", true);
+            tween.InterpolateCallback(block2Ghost, delay, "set", "visible", true);
+
+
+            tween.InterpolateProperty(block1Ghost, "scale", block1Ghost.Scale, block1Ghost.Scale * flashScaleFactor, flashScaleTime, Tween.TransitionType.Sine, delay: delay);
+            tween.InterpolateProperty(block2Ghost, "scale", block2Ghost.Scale, block2Ghost.Scale * flashScaleFactor, flashScaleTime, Tween.TransitionType.Sine, delay: delay);
+
+            tween.InterpolateProperty(block1Ghost, "modulate", block1Ghost.Color, Globals.ColorPalette.NoColor, flashModulateTime, Tween.TransitionType.Linear, delay: delay);
+            tween.InterpolateProperty(block2Ghost, "modulate", block2Ghost.Color, Globals.ColorPalette.NoColor, flashModulateTime, Tween.TransitionType.Linear, delay: delay);
+
+            tween.InterpolateProperty(block1, "scale", block1.Scale, block1.Scale / scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay + flashScaleTime - overlappingTime);
+            tween.InterpolateProperty(block2, "scale", block2.Scale, block2.Scale / scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay + flashScaleTime - overlappingTime);
+
+            tween.InterpolateProperty(block1, "modulate", block1.Color, Globals.ColorPalette.OffColor, modulateTime, Tween.TransitionType.Linear, delay: delay + flashScaleTime - overlappingTime);
+            tween.InterpolateProperty(block2, "modulate", block2.Color, Globals.ColorPalette.OffColor, modulateTime, Tween.TransitionType.Linear, delay: delay + flashScaleTime - overlappingTime);
+
+            if (toBeRepeated)
+            {
+                return totalTime;
+            }
+            
+            tween.InterpolateCallback(block2Ghost, flashScaleTime + delay, "queue_free");
+            tween.InterpolateCallback(block1Ghost, flashScaleTime + delay, "queue_free");
+
+            return totalTime;
         }
-        public static float SwapHovering(Tween tween, Block fromBlock, Block toBlock, bool tobeScaled, bool diagonalSwap, float delay)
+        public static float SwapHovering(Tween tween, FakeGrid grid, Block fromBlock, Block toBlock, bool tobeScaled, bool diagonalSwap, float  delay, float timeFactor = 1.0f, bool toBeRepeated = false)
         {
 
             float scaleFactor = 1.3f;
             float scaleTime = 0.0f;
-            float swapTime = 0.2f;
+            float swapTime = 0.2f*timeFactor;
 
-            Vector2 fromPos = Globals.Utilities.CellCoordsToPosition(toBlock.CellCoords);
-            Vector2 toPos = Globals.Utilities.CellCoordsToPosition(fromBlock.CellCoords);
+            Vector2 fromPos = Globals.Utilities.CellCoordsToPosition(toBlock.CellCoords, grid);
+            Vector2 toPos = Globals.Utilities.CellCoordsToPosition(fromBlock.CellCoords, grid);
 
             if (diagonalSwap)
             {
@@ -62,13 +102,14 @@ namespace Main
 
             if (tobeScaled)
             {
-                scaleTime = 0.1f;
+                scaleTime = 0.1f*timeFactor;
 
                 if (!fromBlock.IsOff)
                 {
                     tween.InterpolateProperty(fromBlock, "scale", fromBlock.Scale, fromBlock.Scale * scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay);
                     tween.InterpolateProperty(fromBlock, "scale", fromBlock.Scale * scaleFactor, fromBlock.Scale, scaleTime, Tween.TransitionType.Sine, delay: delay + scaleTime + swapTime);
-                    tween.InterpolateCallback(fromBlock, 2 * scaleTime + swapTime, "set", "z_index", 0);
+                    if (!toBeRepeated)
+                        tween.InterpolateCallback(fromBlock, 2 * scaleTime + swapTime, "set", "z_index", 0);
                 }
 
                 if (!toBlock.IsOff)
@@ -77,9 +118,10 @@ namespace Main
                     {
                         scaleFactor = 1 / scaleFactor;
                     }
-                    tween.InterpolateProperty(toBlock, "scale", toBlock.Scale, toBlock.Scale / scaleFactor, scaleTime, Tween.TransitionType.Sine);
+                    tween.InterpolateProperty(toBlock, "scale", toBlock.Scale, toBlock.Scale / scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay);
                     tween.InterpolateProperty(toBlock, "scale", toBlock.Scale / scaleFactor, toBlock.Scale, scaleTime, Tween.TransitionType.Sine, delay: delay + scaleTime + swapTime);
-                    tween.InterpolateCallback(toBlock, 2 * scaleTime + swapTime, "set", "z_index", 0);
+                    if (!toBeRepeated)
+                        tween.InterpolateCallback(toBlock, 2 * scaleTime + swapTime, "set", "z_index", 0);
                 }
             }
 
@@ -153,7 +195,6 @@ namespace Main
 
             return delay + 2 * scaleTime + swapTime;
         }
-
         public static float SlidePanelSwap(Tween tween, ControlTemplate fromControl, ControlTemplate toControl, float delay = 0.0f)
         {
             float scaleFactor = 1.1f;
@@ -184,6 +225,89 @@ namespace Main
 
             return delay + 2 * scaleTime + swapTime;
         }
+
+
+        public static float Help4x6Tip0(FakeGrid grid, Tween tween, float delay = 0.0f,  bool toBeRepeateded = true)
+        {
+            float totalTime = 0.0f;
+            float selectDelay = 0.5f;
+            float secondSelectDelay = 1.0f;
+
+            Block block1 = grid.GetBlock(1, 2);
+            Block block2 = grid.GetBlock(2, 2);
+            Block block3 = grid.GetBlock(2, 3);
+
+            totalTime = SelectModulate(tween, block1, delay);
+            totalTime = SelectModulate(tween, block2, totalTime + selectDelay);
+
+            totalTime = UnSelectModulate(tween, block1, block2, totalTime + 0.2f);
+
+            totalTime = SelectModulate(tween, block1, totalTime + secondSelectDelay);
+            totalTime = SelectModulate(tween, block3, totalTime + selectDelay);
+
+            totalTime = SwitchOffScaleModulate(tween, block1, block3, totalTime, true);
+
+             if (toBeRepeateded)
+                return totalTime + 1.0f;
+            return totalTime;
+        }
+        public static float Help4x6Tip1(FakeGrid grid, Tween tween, float delay = 0.0f, bool toBeRepeateded = true)
+        {
+            float totalTime = 0.0f;
+            float selectDelay = 0.5f;
+            float secondSelectDelay = 1.0f;
+
+            Block block1 = grid.GetBlock(1, 2);
+            Block block2 = grid.GetBlock(2, 2);
+            Block block3 = grid.GetBlock(2, 3);
+           
+
+            block1.Swap(block2, true);
+            
+            block1.ZIndex = 1;
+            block2.ZIndex = -1;
+            block3.ZIndex = -2;
+
+            totalTime = SwapHovering(tween, grid, block2, block1, true, false, delay, 1.3f, true);
+
+            totalTime = SelectModulate(tween, block2, totalTime + secondSelectDelay);
+            
+            block2.Swap(block3, true);
+            totalTime = SwapHovering(tween, grid, block2, block3, true, true, totalTime + selectDelay, 1.3f, true);
+            
+            totalTime = UnSelectModulate(tween, block2, totalTime + 0.1f);
+
+            if (toBeRepeateded)
+                return totalTime + 1.0f;
+            return totalTime;
+        }
+        public static float Help4x6Tip2(FakeGrid grid, Tween tween, float delay = 0.0f, bool toBeRepeateded = true)
+        {
+            float totalTime = 0.0f;
+            float selectDelay = 0.5f;
+            float secondSelectDelay = 1.0f;
+
+            Block block1 = grid.GetBlock(1, 2);
+            Block block3 = grid.GetBlock(2, 3);
+            Block block2 = grid.GetBlock(1, 1);
+            Block targetBlock = grid.GetBlock(1, 0);
+           
+
+
+            totalTime = SelectModulate(tween, block1, totalTime + secondSelectDelay);
+            totalTime = SelectModulate(tween, block3, totalTime + selectDelay);
+
+            totalTime = SwitchOffScaleModulate(tween, block1, block3, totalTime, true);
+
+            totalTime = SelectModulate(tween, block2, totalTime + secondSelectDelay);
+            totalTime = SwitchOffScaleModulate(tween, block2, targetBlock, totalTime, true);
+
+            if (toBeRepeateded)
+                return totalTime + 1.0f;
+            return totalTime;
+        }
+
+
         public static void Idle(Tween tween, Block block, float finalTime)
         {
             tween.InterpolateCallback(block, finalTime, "SetState", Globals.BLOCKSTATE.IDLE);

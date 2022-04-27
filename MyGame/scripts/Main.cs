@@ -9,7 +9,7 @@ namespace Main
         // private GameUI _gameUI;
         private ControlTemplate _settingsControl;
         private ControlTemplate _mainControl;
-        private ControlTemplate _helpControl;
+        private HelpControl _helpControl;
         private Control _gridControl;
         private Tween _tween;
 
@@ -19,12 +19,12 @@ namespace Main
             _gridControl = GetNode<Control>("GridLayer/MainControl/GridControl");
             _settingsControl = GetNode<ControlTemplate>("GridLayer/SettingsControl");
             _mainControl = GetNode<ControlTemplate>("GridLayer/MainControl");
-            _helpControl = GetNode<ControlTemplate>("GridLayer/HelpControl");
+            _helpControl = GetNode<HelpControl>("GridLayer/HelpControl");
             _tween = GetNode<Tween>("MainTween");
 
 
-            PackedScene _gridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
-            _grid = _gridScene.Instance<Grid>();
+            // PackedScene _gridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
+            _grid = Globals.PackedScenes.GridScene.Instance<Grid>();
 
             int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
             Vector2 cellRatio = new Vector2(1f, 1f);
@@ -34,10 +34,9 @@ namespace Main
 
             _gridControl.AddChild(_grid);
 
-            //_mainControl.GetParent().MoveChild(_mainControl, 1);
-
-            //CenterGridPosition();
             RotateGrid();
+            
+            _helpControl.InstanceGrid(new Vector2(4, 6), new Vector2(64, 64), new Vector2(10, 10), cellRatio, sizeConstraint-50);
 
         }
 
@@ -57,6 +56,7 @@ namespace Main
 
                 case "HelpButton":
                     ChangePanel(_helpControl, _mainControl);
+                    _helpControl.StartHelpTween();
                     break;
             }
         }
@@ -80,6 +80,7 @@ namespace Main
             switch (buttonName)
             {
                 case "BackButton":
+                    _helpControl.StopHelpTween();
                     ChangePanel(_mainControl, _helpControl);
                     break;
             }

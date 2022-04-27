@@ -7,19 +7,17 @@ namespace Main
     {
         private bool _flipped = false;
         public bool Flipped { get { return _flipped;} set { _flipped = value; } }
-        private bool _changedLayer = false;
-        public bool ChangedLayer { get { return _changedLayer;}}
+       
         private bool _isOff = false;
         public bool IsOff {get {return _isOff;}}
+
+        private Vector2 _originalScale;
+        private Vector2 _originalPosition;
+
         
         private Globals.BLOCKSTATE _state = Globals.BLOCKSTATE.IDLE;
         public Globals.BLOCKSTATE State {get {return _state;} set {_state = value;}}
 
-
-
-        private Tween _tween;
-        public Tween Tween{ get {return _tween;}}
-        private AnimationPlayer _animation;
 
 
         private Vector2 _cellCoords;
@@ -38,15 +36,23 @@ namespace Main
         [Signal]
         delegate void StateIdle();
 
-        public void Init(Vector2 cellCoords, Vector2 cellSize, int colorId = 0)
+        public void Init(Vector2 cellCoords, FakeGrid grid, int colorId = 0, bool rndColors = false)
         {
             _cellCoords = cellCoords;
             _colorId = colorId;
-            this.Scale =  cellSize / Texture.GetSize();
+            this.Scale =  grid.CellSize / Texture.GetSize();
+            _originalScale = this.Scale;
   
-            Position = Globals.Utilities.CellCoordsToPosition(cellCoords);
+            Position = Globals.Utilities.CellCoordsToPosition(cellCoords, grid);
+            _originalPosition = Position;
             Modulate = Globals.ColorPalette.DefaultColor;
+            if (rndColors)
+            {
+                _color = Globals.ColorPalette.GetColorRandom(_colorId);
+                return;
+            }
             _color = Globals.ColorPalette.GetColor(_colorId);
+            GetNode<Label>("Label").Text = $"{cellCoords}";
         }
         public void InitColor(int colorId = 0)
         {
@@ -59,22 +65,28 @@ namespace Main
             Modulate = Globals.ColorPalette.DefaultColor;
             _colorId = -1;
             _isOff = false;
+            this.Scale = _originalScale;
         }
-
-
-        public override void _Ready()
+        public void Reset()
         {
-            _tween = GetNode<Tween>("BlockTween");
-            _animation = GetNode<AnimationPlayer>("AnimationPlayer");
+            _flipped = false;
+            Modulate = Globals.ColorPalette.DefaultColor;
+            _isOff = false;
+            Scale = _originalScale;
+            Position = _originalPosition;
         }
 
-        // public override void _PhysicsProcess(float delta)
-        // {
-        //     Label label = GetNode<Label>("Label");
-        //     label.Text = $"{_cellCoords}";
-        // }
 
-
+        public void Copy(Block block)
+        {
+            _cellCoords = block.CellCoords;
+            _colorId = block.ColorId;
+            Scale =  block.Scale;
+  
+            Position = block.Position;
+            Modulate = block.Modulate;
+            _color = block.Color;
+        }
         public bool Swap(Block toBlock, bool tobeScaled = false)
         {
              _state = Globals.BLOCKSTATE.ANIMATING;
@@ -121,6 +133,15 @@ namespace Main
             ZIndex = -1;
 
             _state = Globals.BLOCKSTATE.ANIMATING;
+        }
+        public void SetOff()
+        {
+            _isOff = true;
+            _flipped = false;
+            ZIndex = -1;
+
+            Scale /= Globals.GridInfo.ScaleFactor;
+            Modulate = Globals.ColorPalette.OffColor;
         }
         
         public void SetState(Globals.BLOCKSTATE state)

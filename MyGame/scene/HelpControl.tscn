@@ -1,24 +1,96 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://scripts/ControlTemplate.cs" type="Script" id=1]
+[ext_resource path="res://scripts/HelpControl.cs" type="Script" id=1]
 [ext_resource path="res://assets/block.png" type="Texture" id=2]
 
 [node name="HelpControl" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 script = ExtResource( 1 )
 __meta__ = {
-"_edit_use_anchors_": false
+"_edit_use_anchors_": false,
+"_edit_vertical_guides_": [ 270.0 ]
 }
 _buttonGroupName = "HelpButton"
+_helpTip0 = "Tip 1: select and match color of adjoint 
+blocks to deactivate it "
+_helpTip1 = "Tip 2: click and drag to swap two adjoint blocks. 
+You can swap also after selection but it will an extra move "
+_helpTip2 = "Tip 3: first deactive all the hidden blocks, 
+then match last hidden blocks
+ with corrispoding reference block "
+_helpTip3 = "Tip 4: last block for every color cannot be matched diagonally, 
+it must be  vertically aligned"
 
 [node name="BackButton" type="TextureButton" parent="." groups=["HelpButton"]]
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -104.0
-margin_top = -104.0
-margin_right = -40.0
-margin_bottom = -40.0
+margin_left = -88.0
+margin_top = -88.0
+margin_right = -24.0
+margin_bottom = -24.0
 texture_normal = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NextButton" type="TextureButton" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 181.0
+margin_top = -164.0
+margin_right = 245.0
+margin_bottom = -100.0
+texture_normal = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PreviousButton" type="TextureButton" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -248.0
+margin_top = -164.0
+margin_right = -184.0
+margin_bottom = -100.0
+texture_normal = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HelpLabel" type="Label" parent="."]
+self_modulate = Color( 0, 0, 0, 1 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -141.5
+margin_top = -155.0
+margin_right = 141.5
+margin_bottom = -112.0
+text = "Tip 1: select and match color of adjoint 
+blocks to deactivate it "
+align = 1
+valign = 1
+
+[node name="GridControl" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_top = -88.0
+margin_bottom = -88.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="NextButton" to="." method="_on_NextButton_pressed"]
+[connection signal="pressed" from="PreviousButton" to="." method="_on_PreviousButton_pressed"]

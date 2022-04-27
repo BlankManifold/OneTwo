@@ -5,83 +5,22 @@ using Godot;
 
 namespace Main
 {
-    public class Grid : Node2D
+    public class Grid : FakeGrid
     {
-        [Export]
-        private Vector2 _gridSize = new Vector2(4, 4);
-        public Vector2 GridSize { get { return _gridSize; } }
-
-        [Export]
-        private bool _offMovable = false;
-        private int _numberOfColors = 4;
-        private Vector2 _gridExtent;
-        public Vector2 GridExtent { get { return _gridExtent; } }
-
-        private Vector2 _offset;
-        public Vector2 Offset { get { return _offset; } }
-
-        [Export]
-        private Vector2 _cellBorder = new Vector2(10, 10);
-        public Vector2 CellBorder { get { return _cellBorder; } }
-
-        private Vector2 _cellSize = new Vector2(64, 64);
-        public Vector2 CellSize { get { return _cellSize; } }
-
 
         private bool _someoneFlipped = false;
-
-        private PackedScene _blockScene;
-        private Node2D _blocksContainer;
-        private Block[,] _blocksMatrix;
-        private  Godot.Collections.Array<Block> _blocks;
         private Vector2 _justPressedCoords;
         private Vector2 _selectedCoords;
-        private List<int> _colorsAuxList;
         private List<int> _indexAuxList;
         private List<int> _remaingColorsList = new List<int>() { };
-        private Globals.GRIDSTATE _gridState;
+        private Globals.GRIDSTATE _gridState = Globals.GRIDSTATE.IDLE;
         private int _moves;
 
-        private Tween _tween;
-
-        private Vector2 _invalidCoords = new Vector2(-1, -1);
 
         [Signal]
         delegate void UpdateMoves(int moves);
 
 
-
-
-        public void Init(bool offMovable, Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, int xConstraint)
-        {
-            _offMovable = offMovable;
-            _gridSize = gridSize;
-            _cellBorder = cellBorder;
-            _cellSize = cellSize;
-            _numberOfColors = (int)_gridSize[0];
-
-            SetGridExtent(xConstraint);
-            Vector2 centerCoords = _gridSize / 2f - 0.5f * Vector2.One;
-
-            _offset = (_cellSize + _cellBorder) * centerCoords;
-
-        }
-        public void SetGridExtent(int xConstraint)
-        {
-            float xMaxSize = xConstraint / _gridSize[0] - _cellBorder.x;
-            float factor = xMaxSize / _cellSize.x;
-            _cellSize *= factor;
-
-            _gridExtent = _gridSize * (_cellSize + _cellBorder) - _cellBorder;
-        }
-
-
-
-
-        // public override void _Process(float _)
-        // {
-
-        // }
         public override void _Ready()
         {
             _tween = GetNode<Tween>("GridTween");
@@ -96,7 +35,10 @@ namespace Main
 
             Connect(nameof(UpdateMoves), (GameUI)GetTree().GetNodesInGroup("GameUI")[0], "_on_Grid_UpdateMoves");
 
-            GenerateBlocks();
+            if (_animateGeneration)
+            {
+                GenerateBlocks();
+            }
         }
         public override void _UnhandledInput(InputEvent @event)
         {
@@ -147,25 +89,6 @@ namespace Main
 
 
 
-
-        private Block GetBlock(Vector2 cellCoords)
-        {
-            if (cellCoords != _invalidCoords)
-            {
-                return _blocksMatrix[(int)cellCoords[1], (int)cellCoords[0]];
-            }
-
-            return null;
-        }
-        private Block GetBlock(int col, int row)
-        {
-            if (col == _invalidCoords[0] || row == _invalidCoords[1])
-            {
-                return _blocksMatrix[row, col];
-            }
-
-            return null;
-        }
         private bool IsActiveCoords(Vector2 cellCoords)
         {
             if (cellCoords == _invalidCoords)
@@ -207,7 +130,7 @@ namespace Main
                 return _invalidCoords;
             }
             //GD.Print($"Position: {position}, Coords: {Globals.Utilities.PositionToCellCoords(position)}");
-            Vector2 cellCoords = Globals.Utilities.PositionToCellCoords(position);
+            Vector2 cellCoords = Globals.Utilities.PositionToCellCoords(position, this);
 
             if (cellCoords[1] == 0)
             {
@@ -216,13 +139,7 @@ namespace Main
 
             return cellCoords;
         }
-        private void SetBlockMatrix(Vector2 cellCoords, Block block)
-        {
-            if (cellCoords != _invalidCoords)
-            {
-                _blocksMatrix[(int)cellCoords[1], (int)cellCoords[0]] = block;
-            }
-        }
+
 
 
         private async void DoMove(Vector2 justReleasedOnCoords, Vector2 justPressedCoords, Vector2 selectedCoords, bool someoneFlipped)
@@ -243,7 +160,7 @@ namespace Main
                         if (justReleasedOnCoords == selectedCoords)
                             toBeFlippedCoords = justPressedCoords;
 
-                            SetUpUnselect(toBeFlippedCoords, finalTime);
+                        SetUpUnselect(toBeFlippedCoords, finalTime);
                         _moves += 1;
                     }
 
@@ -319,108 +236,6 @@ namespace Main
                 return;
             }
         }
-
-
-        private void Select(Vector2 coords, bool someoneFlipped = false, float delay = 0f)
-        {
-            float finalTime = SetUpSelect(coords, someoneFlipped, delay);
-            TweenManager.Start(_tween, finalTime, GetBlock(coords));
-        }
-        private float SetUpSelect(Vector2 coords, bool someoneFlipped = false, float delay = 0f)
-        {
-            _gridState = Globals.GRIDSTATE.SELECTING;
-            if (!someoneFlipped)
-            {
-                _someoneFlipped = true;
-                _selectedCoords = coords;
-            }
-
-            Block block = GetBlock(coords);
-            block.Flip();
-
-            return TweenManager.SelectModulate(_tween, block, delay);
-        }
-        private void Unselect(Vector2 coords, float delay = 0f)
-        {
-            float finalTime = SetUpUnselect(coords, delay);
-            TweenManager.Start(_tween, finalTime, GetBlock(coords));
-
-        }
-        private float SetUpUnselect(Vector2 coords, float delay = 0f)
-        {
-            _gridState = Globals.GRIDSTATE.UNSELECTING;
-            _selectedCoords = _invalidCoords;
-            _someoneFlipped = false;
-
-            Block block = GetBlock(coords);
-            block.Flip();
-
-            return TweenManager.UnSelectModulate(_tween, block, delay);
-        }
-        private void Unselect(Vector2 coords1, Vector2 coords2, float delay = 0f)
-        {
-            float finalTime = SetUpUnselect(coords1, coords2, delay);
-            TweenManager.Start(_tween, finalTime, GetBlock(coords1), GetBlock(coords2));
-        }
-        private float SetUpUnselect(Vector2 coords1, Vector2 coords2, float delay = 0f)
-        {
-            _gridState = Globals.GRIDSTATE.UNSELECTING;
-            _selectedCoords = _invalidCoords;
-            _someoneFlipped = false;
-
-            Block block1 = GetBlock(coords1);
-            Block block2 = GetBlock(coords2);
-            block1.Flip();
-            block2.Flip();
-
-            return TweenManager.UnSelectModulate(_tween, block1, block2, delay);
-        }
-        private void SwitchOff(Vector2 coords1, Vector2 coords2, float delay = 0f)
-        {
-            float finalTime = SetUpSwitchOff(coords1, coords2, delay);
-            TweenManager.Start(_tween, finalTime, GetBlock(coords1), GetBlock(coords2));
-        }
-        private float SetUpSwitchOff(Vector2 coords1, Vector2 coords2, float delay = 0f)
-        {
-            _gridState = Globals.GRIDSTATE.INACTIVATING;
-            _someoneFlipped = false;
-            _selectedCoords = _invalidCoords;
-
-            Block block1 = GetBlock(coords1);
-            Block block2 = GetBlock(coords2);
-
-            _remaingColorsList[block1.ColorId] -= 2;
-
-            block1.SwitchOff();
-            block2.SwitchOff();
-
-            return TweenManager.SwitchOffScaleModulate(_tween, block1, block2, delay);
-        }
-        private void SwapBlocks(Vector2 fromCoords, Vector2 toCoords, float delay = 0f)
-        {
-            float finalTime = SetUpSwapBlocks(fromCoords, toCoords, delay);
-
-            TweenManager.Start(_tween, finalTime, GetBlock(fromCoords), GetBlock(toCoords));
-        }
-        private float SetUpSwapBlocks(Vector2 fromCoords, Vector2 toCoords, float delay = 0f)
-        {
-            _gridState = Globals.GRIDSTATE.SWAPPING;
-
-            Block fromBlock = GetBlock(fromCoords);
-            Block toBlock = GetBlock(toCoords);
-
-            bool diagonalSwap = false;
-            if (fromCoords[0] != toCoords[0] && fromCoords[1] != toCoords[1])
-                diagonalSwap = true;
-    
-            bool tobeScaled = fromBlock.Swap(toBlock, CheckIfScaledSwap(fromBlock, toBlock, diagonalSwap));
-            float finalTime = TweenManager.SwapHovering(_tween, fromBlock, toBlock, tobeScaled, diagonalSwap, delay);
-            
-            SetBlockMatrix(toCoords, fromBlock);
-            SetBlockMatrix(fromCoords, toBlock);
-
-            return finalTime;
-        }
         private void Win()
         {
             Restart();
@@ -445,10 +260,10 @@ namespace Main
                 for (int col = 0; col < _gridSize[0]; col++)
                 {
                     Block block = _blocksMatrix[row, col];
-                    int colorId = PickColorId(col, row);
+                    int colorId = PickColorId(col, row, _colorsAuxList);
 
                     block.Restart();
-                    block.Init(new Vector2(col, row), _cellSize, colorId);
+                    block.Init(new Vector2(col, row), this, colorId, true);
 
                     if (row == 0)
                     {
@@ -457,59 +272,70 @@ namespace Main
                     }
                 }
             }
+        }
+        private async void GenerateBlocks()
+        {
+            Globals.ColorPalette.RandomizeColorList();
+            CreateBlocks(false, true);
 
+            _blocks = new Godot.Collections.Array<Block>(GetTree().GetNodesInGroup("Block"));
+            TweenManager.GenerateBlocks(_tween, _blocks);
 
+            await ToSignal(GetTree().CreateTimer(1f), "timeout");
+           _gridState = Globals.GRIDSTATE.GENERATING;
+            TweenManager.Start(_tween);
         }
 
 
 
-        private bool CheckIfAdjointsOn(Vector2 coords)
+        protected override float SetUpSelect(Vector2 coords, bool someoneFlipped = false, float delay = 0f)
         {
-            Vector2 diffCoords = Vector2.Zero;
-            for (int i = -1; i <= 1; i++)
+            _gridState = Globals.GRIDSTATE.SELECTING;
+            if (!someoneFlipped)
             {
-                for (int j = -1; j <= 1; j++)
-                {
-                    if (i == 0 && j == 0)
-                    {
-                        continue;
-                    }
-
-                    diffCoords[0] = i;
-                    diffCoords[1] = j;
-
-                    if (!GetBlock(coords + diffCoords).IsOff)
-                    {
-                        return true;
-                    };
-                }
-            }
-            return false;
-        }
-        private bool CheckIfScaledSwap(Vector2 fromCoords, Vector2 toCoords, bool diagonalSwap)
-        {
-            return CheckIfScaledSwap(GetBlock(fromCoords), GetBlock(toCoords), diagonalSwap);
-        }
-        private bool CheckIfScaledSwap(Block fromBlock, Block toBlock, bool diagonalSwap)
-        {
-            if (!fromBlock.IsOff && !toBlock.IsOff)
-            {
-                return true;
+                _someoneFlipped = true;
+                _selectedCoords = coords;
             }
 
-            if (diagonalSwap)
-            {
-                Vector2 coordsDiff = toBlock.CellCoords - fromBlock.CellCoords;
-                Vector2 coord1 = fromBlock.CellCoords;
-                Vector2 coord2 = fromBlock.CellCoords;
-
-                coord1[0] += coordsDiff[0];
-                coord2[1] += coordsDiff[1];
-                return (!GetBlock(coord1).IsOff || !GetBlock(coord2).IsOff);
-            }
-
-            return false;
+            return base.SetUpSelect(coords, someoneFlipped, delay);
         }
+        protected override float SetUpUnselect(Vector2 coords, float delay = 0f)
+        {
+            _gridState = Globals.GRIDSTATE.UNSELECTING;
+            _selectedCoords = _invalidCoords;
+            _someoneFlipped = false;
+
+            return base.SetUpUnselect(coords, delay);
+        }
+        protected override float SetUpUnselect(Vector2 coords1, Vector2 coords2, float delay = 0f)
+        {
+            _gridState = Globals.GRIDSTATE.UNSELECTING;
+            _selectedCoords = _invalidCoords;
+            _someoneFlipped = false;
+
+            return base.SetUpUnselect(coords1, coords2, delay);
+        }
+        protected override float SetUpSwitchOff(Vector2 coords1, Vector2 coords2, float delay = 0f)
+        {
+            _gridState = Globals.GRIDSTATE.INACTIVATING;
+            _someoneFlipped = false;
+            _selectedCoords = _invalidCoords;
+            _remaingColorsList[GetBlock(coords1).ColorId] -= 2;
+
+            return base.SetUpSwitchOff(coords1, coords2, delay);
+        }
+        protected override float SetUpSwapBlocks(Vector2 fromCoords, Vector2 toCoords, float delay = 0f)
+        {
+            _gridState = Globals.GRIDSTATE.SWAPPING;
+
+            Block fromBlock = GetBlock(fromCoords);
+            Block toBlock = GetBlock(toCoords);
+
+            return base.SetUpSwapBlocks(fromCoords, toCoords, delay);
+        }
+
+
+
         private bool CheckValidSwap(Vector2 coords1, Vector2 coords2)
         {
             // IF NOT ADJOINT
@@ -525,18 +351,14 @@ namespace Main
 
             return true;
         }
-        private bool CheckSameColor(Vector2 coords1, Vector2 coords2)
-        {
-            return (GetBlock(coords1).ColorId == GetBlock(coords2).ColorId);
-        }
         private bool CheckIfWin()
         {
             return (_remaingColorsList.Sum() == 0);
         }
-        private bool CheckIfAdjoint(Vector2 coords1, Vector2 coords2)
+        protected override bool CheckIfAdjoint(Vector2 coords1, Vector2 coords2)
         {
-            Vector2 coordsDiff = coords1 - coords2;
-            bool positionBool = (Math.Abs(coordsDiff[0]) + Math.Abs(coordsDiff[1]) <= 2 && Math.Abs(coordsDiff[0]) < 2 && Math.Abs(coordsDiff[1]) < 2);
+
+            bool positionBool = base.CheckIfAdjoint(coords1, coords2);
 
             bool isIdle = (GetBlock(coords1).State == Globals.BLOCKSTATE.IDLE && GetBlock(coords2).State == Globals.BLOCKSTATE.IDLE);
 
@@ -555,49 +377,6 @@ namespace Main
 
 
 
-        private async void GenerateBlocks()
-        {
-            Globals.ColorPalette.RandomizeColorList();
-
-            for (int row = 0; row < _gridSize[1]; row++)
-            {
-                for (int col = 0; col < _gridSize[0]; col++)
-                {
-                    Block block = _blockScene.Instance<Block>();
-
-                    int colorId = PickColorId(col, row);
-
-                    block.Init(new Vector2(col, row), _cellSize, colorId);
-                    _blocksContainer.AddChild(block);
-                    _blocksMatrix[row, col] = block;
-                    
-                    block.Visible = false;
-                    if (row == 0)
-                    {
-                        block.Flipped = true;
-                        block.Modulate = block.Color;
-                    }
-                }
-            }
-
-            _blocks = new Godot.Collections.Array<Block>(GetTree().GetNodesInGroup("Block"));
-            TweenManager.GenerateBlocks(_tween, _blocks);
-            
-            await ToSignal(GetTree().CreateTimer(1f), "timeout");
-            _gridState = Globals.GRIDSTATE.GENERATING;
-            TweenManager.Start(_tween);
-        }
-        private int PickColorId(int col, int row)
-        {
-            if (row == 0)
-            {
-                return col;
-            }
-
-            int colorId = _colorsAuxList[(row - 1) * _numberOfColors + col];
-
-            return colorId;
-        }
         private void PopulateAuxColorArray()
         {
             _colorsAuxList = new List<int> { };
@@ -623,6 +402,7 @@ namespace Main
                 _remaingColorsList.Add((int)_gridSize[1]);
             }
         }
+
 
 
         public void _on_GridTween_tween_all_completed()
