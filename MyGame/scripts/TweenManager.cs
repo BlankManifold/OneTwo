@@ -32,7 +32,7 @@ namespace Main
 
             return modulateTime + totalDelay;
         }
-        public static float SwitchOffScaleModulate(Tween tween, Block block1, Block block2, float delay, bool toBeRepeated = false)
+        public static float SwitchOffScaleModulate(Tween tween, FakeGrid grid, Block block1, Block block2, float delay, bool toBeRepeated = false)
         {
             float scaleFactor = 1.4f;
             float scaleTime = 0.8f;
@@ -57,6 +57,9 @@ namespace Main
 
             parent.AddChild(block1Ghost);
             parent.AddChild(block2Ghost);
+
+            grid.AddAuxBlock(block1Ghost);
+            grid.AddAuxBlock(block2Ghost);
 
             tween.InterpolateCallback(block1Ghost, delay, "set", "visible", true);
             tween.InterpolateCallback(block2Ghost, delay, "set", "visible", true);
@@ -245,7 +248,7 @@ namespace Main
             totalTime = SelectModulate(tween, block1, totalTime + secondSelectDelay);
             totalTime = SelectModulate(tween, block3, totalTime + selectDelay);
 
-            totalTime = SwitchOffScaleModulate(tween, block1, block3, totalTime, true);
+            totalTime = SwitchOffScaleModulate(tween, grid, block1, block3, totalTime, true);
 
              if (toBeRepeateded)
                 return totalTime + 1.0f;
@@ -297,10 +300,10 @@ namespace Main
             totalTime = SelectModulate(tween, block1, totalTime + secondSelectDelay);
             totalTime = SelectModulate(tween, block3, totalTime + selectDelay);
 
-            totalTime = SwitchOffScaleModulate(tween, block1, block3, totalTime, true);
+            totalTime = SwitchOffScaleModulate(tween, grid, block1, block3, totalTime, true);
 
             totalTime = SelectModulate(tween, block2, totalTime + secondSelectDelay);
-            totalTime = SwitchOffScaleModulate(tween, block2, targetBlock, totalTime, true);
+            totalTime = SwitchOffScaleModulate(tween, grid, block2, targetBlock, totalTime, true);
 
             if (toBeRepeateded)
                 return totalTime + 1.0f;

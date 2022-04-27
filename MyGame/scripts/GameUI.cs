@@ -13,7 +13,7 @@ namespace Main
         {
             base._Ready();
             
-            _movesLabel = GetNode<Label>("MovesTexture/MovesLabel");
+            _movesLabel = GetNode<Label>("MovesLabel");
             _movesLabel.Text = $"Moves: 0";
 
             _bottomPosition = GetNode<Position2D>("BottomPosition").GlobalPosition;

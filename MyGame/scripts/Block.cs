@@ -13,6 +13,7 @@ namespace Main
 
         private Vector2 _originalScale;
         private Vector2 _originalPosition;
+        private Vector2 _originalCoords;
 
         
         private Globals.BLOCKSTATE _state = Globals.BLOCKSTATE.IDLE;
@@ -39,6 +40,7 @@ namespace Main
         public void Init(Vector2 cellCoords, FakeGrid grid, int colorId = 0, bool rndColors = false)
         {
             _cellCoords = cellCoords;
+            _originalCoords = _cellCoords;
             _colorId = colorId;
             this.Scale =  grid.CellSize / Texture.GetSize();
             _originalScale = this.Scale;
@@ -73,6 +75,7 @@ namespace Main
             _isOff = false;
             Scale = _originalScale;
             Position = _originalPosition;
+            CellCoords = _originalCoords;
         }
 
 

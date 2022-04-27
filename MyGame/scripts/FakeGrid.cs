@@ -41,6 +41,8 @@ namespace Main
         protected Tween _tween;
         public Tween Tween { get {return _tween;} }
 
+        private List<Block> _auxBlocks = new List<Block>(){};
+
 
         public void Init(bool offMovable, Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, int xConstraint, bool animateGeneration = true, List<int> colorsAuxList = null)
         {
@@ -165,7 +167,7 @@ namespace Main
             block1.SwitchOff();
             block2.SwitchOff();
 
-            return TweenManager.SwitchOffScaleModulate(_tween, block1, block2, delay);
+            return TweenManager.SwitchOffScaleModulate(_tween, this, block1, block2, delay);
         }
         protected void SwapBlocks(Vector2 fromCoords, Vector2 toCoords, float delay = 0f)
         {
@@ -318,7 +320,6 @@ namespace Main
                 }
             }
         }
-        
         protected int PickColorId(int col, int row, List<int> colorList)
         {
             if (row == 0)
@@ -331,5 +332,17 @@ namespace Main
             return colorId;
         }
 
+        public void AddAuxBlock(Block block)
+        {
+            _auxBlocks.Add(block);
+        }
+        public void DeleteAllAuxBlocks()
+        {
+            foreach (Block auxBlock in _auxBlocks)
+            {
+                auxBlock.QueueFree();
+            }
+            _auxBlocks.Clear();
+        }
     }
 }

@@ -92,7 +92,18 @@ namespace Main
         public void StopHelpTween()
         {
             _tween.RemoveAll();
+            _grid.DeleteAllAuxBlocks();
             _grid.Reset(true, false);
+        }
+
+        public void ChangeTip()
+        {
+            if (_helpIndex != 3)
+            {
+                StopHelpTween();
+                _helpTweenFunction(0.5f);
+
+            }
         }
 
         public void _on_NextButton_pressed()
@@ -103,9 +114,7 @@ namespace Main
                 _helpIndex = 0;
             }
 
-            _tween.RemoveAll();
-            _grid.Reset(true, false);
-            _helpTweenFunction(0.5f);
+           ChangeTip();
 
         }
         public void _on_PreviousButton_pressed()
@@ -116,9 +125,8 @@ namespace Main
                 _helpIndex = 3;
             }
 
-            _tween.RemoveAll();
-            _grid.Reset(true, false);
-            _helpTweenFunction(0.5f);
+            ChangeTip();
+
         }
 
         // public void _on_HelpTween_tween_all_completed()
