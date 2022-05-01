@@ -1,15 +1,25 @@
-# NewbiesJamMyGame
+# OneTwo
 
 My first game jam ever!
 A simple puzzle game made for [Newbies Game Jam (2022 - 1)](https://itch.io/jam/newbies) with MINIMALISM theme!
 
+OneTwo is now published at ...
 
 ## Objective
 
 
 ## My goals
 
-​First game jam ever and third "complete" I game ever published! This time my goals are focused on time management and deadline stuff.  I will not try to tackle too many completely new stuff. After the voting deadline maybe I will do some much-needed code refactoring and maybe some game updates/expansion.
+​First game jam ever and third "complete" game I ever published! This time my goals are focused on time management and deadline stuff.  I will not try to tackle too many completely new stuff. After the voting deadline maybe I will do some much-needed code refactoring and maybe some game updates/expansion.
+
+## Credits
+
+Because of my ignorance of music/audio/font I downloaded this free (I think) assets:
+
+* Music:
+* Audio effect:
+* Font: 
+
 
 ## Progress Updates:
 
@@ -77,3 +87,24 @@ Change my mind a few times meanwhile...totally abstract or not? I tried a themed
 * Implemented `SaveManager.cs`: save and load highscore, connected with `SettingsControl` and `Grid`
 * Some refactoring
 * Some changes in some specific tween animations
+
+
+### 01/05/22
+
+Time is ticking! Only 1.5 days left... Clean, elegant, general and reusable code is now only a vanished dream! A lot of bug solved brutally! Remain the biggest bug of all: HTML5 export doesn't work, work fine in the editor and on Android
+
+* Completed `HelpControl` tween animation
+* Created win animation and win/winning state
+* Fixes a lot of bugs with input and grid/block state
+* Created a (probably not so efficient) `AudioManager`: handle all audio effect (not music), if audio is already playing, create a new `AudioStreamPlayer` and when finished delete it
+* Added sound effect to block animation and to win animation
+* Added background music
+* Create all icons for UI buttons
+* Selected and added a color pallette: added a `ColorPalette` class and a `ColorManager` static class in `Globals`  
+* Selected a name for this game: "OneTwo"
+* Connected music and audio settings to `AudioManager`
+* Added a save functions and file for settings
+* Update itch.io page: create a cover image, prepared some gifs/screenshoots
+* Selected a font
+* Fixed problem with moves counter and moves label
+* Created a background pattern 
