@@ -9,23 +9,31 @@ namespace Main
     {
 
         private bool _someoneFlipped = false;
-        private Vector2 _justPressedCoords;
-        private Vector2 _selectedCoords;
+        private Vector2 _justPressedCoords = new Vector2(-1, -1);
+        private Vector2 _selectedCoords = new Vector2(-1, -1);
         private List<int> _indexAuxList;
         private List<int> _remaingColorsList = new List<int>() { };
         private Globals.GRIDSTATE _gridState = Globals.GRIDSTATE.IDLE;
+        public Globals.GRIDSTATE GridState { get { return _gridState; } }
         private int _moves;
 
+        private Node _winLabel;
+        public Node WinLabel { get { return _winLabel; } }
 
         [Signal]
         delegate void UpdateMoves(int moves);
+        [Signal]
+        delegate void WinState(bool winning);
 
 
         public override void _Ready()
         {
+            _winLabel = GetParent().GetNode<Node>("WinLabel");
+            _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
             _tween = GetNode<Tween>("GridTween");
             _blocksContainer = GetNode<Node2D>("Blocks");
             _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
+
 
             PopulateAuxColorArray();
             RandomizeAuxColorArray();
@@ -34,15 +42,18 @@ namespace Main
             _blocksMatrix = new Block[(int)_gridSize[1], (int)_gridSize[0]];
 
             Connect(nameof(UpdateMoves), (GameUI)GetTree().GetNodesInGroup("GameUI")[0], "_on_Grid_UpdateMoves");
+            Connect(nameof(WinState), (Main)GetTree().GetNodesInGroup("Main")[0], "_on_Grid_WinState");
 
             if (_animateGeneration)
             {
                 GenerateBlocks();
             }
+
+            SetwinLabel();
         }
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (_gridState == Globals.GRIDSTATE.GENERATING)
+            if (_gridState == Globals.GRIDSTATE.GENERATING || _gridState == Globals.GRIDSTATE.WINNING)
             {
                 @event.Dispose();
                 return;
@@ -65,9 +76,17 @@ namespace Main
 
                 if (!mouseButtonEvent.IsPressed())
                 {
-                    Vector2 justReleasedOnCoords = SelectCoords(GetLocalMousePosition());
+                    Vector2 releasedPosition = GetLocalMousePosition();
+                    Vector2 justReleasedOnCoords = SelectCoords(releasedPosition);
                     Vector2 justPressedCoords = _justPressedCoords;
                     Vector2 selectedCoords = _selectedCoords;
+
+                    if (justReleasedOnCoords != justPressedCoords && !CheckIfAdjoint(justReleasedOnCoords, justPressedCoords))
+                    {
+                        justReleasedOnCoords = SelectDraggedToCoords(releasedPosition, justPressedCoords);
+                    }
+
+
                     bool someoneFlipped = _someoneFlipped;
 
                     // IF RELEASED_ON_COORDS ARE VALID
@@ -100,10 +119,10 @@ namespace Main
 
             if (_offMovable)
             {
-                return !(block.State == Globals.BLOCKSTATE.ANIMATING);
+                return block.State == Globals.BLOCKSTATE.IDLE;
             }
 
-            return !block.IsOff && !(block.State == Globals.BLOCKSTATE.ANIMATING);
+            return !block.IsOff && block.State == Globals.BLOCKSTATE.IDLE;
 
         }
         private bool IsActiveCoords(int col, int row)
@@ -117,16 +136,15 @@ namespace Main
 
             if (_offMovable)
             {
-                return !(block.State == Globals.BLOCKSTATE.ANIMATING);
+                return block.State == Globals.BLOCKSTATE.IDLE;
             }
 
-            return !block.IsOff && !(block.State == Globals.BLOCKSTATE.ANIMATING);
+            return !block.IsOff && block.State == Globals.BLOCKSTATE.IDLE;
         }
         private Vector2 SelectCoords(Vector2 position)
         {
             if (!IsInGrid(position))
             {
-                GD.Print("Not valid");
                 return _invalidCoords;
             }
             //GD.Print($"Position: {position}, Coords: {Globals.Utilities.PositionToCellCoords(position)}");
@@ -139,10 +157,38 @@ namespace Main
 
             return cellCoords;
         }
+        private Vector2 SelectCoordsUnSafe(Vector2 position)
+        {
+            Vector2 cellCoords = Globals.Utilities.PositionToCellCoords(position, this);
+
+            return cellCoords;
+        }
+
+        private Vector2 SelectDraggedToCoords(Vector2 releasedPosition, Vector2 justPressedCoords)
+        {
+            Vector2 justReleasedOnCoords = SelectCoordsUnSafe(releasedPosition);
+            Vector2 coordsDiff = justReleasedOnCoords - justPressedCoords;
+
+            if (Mathf.Abs(coordsDiff.x) > 3 || Mathf.Abs(coordsDiff.y) > 3)
+            {
+                return _invalidCoords;
+            }
+
+            coordsDiff.x = Mathf.Clamp(coordsDiff.x, -1, 1);
+            coordsDiff.y = Mathf.Clamp(coordsDiff.y, -1, 1);
+
+            justReleasedOnCoords = _justPressedCoords + coordsDiff;
+
+            if (!IsCoordsValid(justReleasedOnCoords) || justReleasedOnCoords.y == 0)
+            {
+                return _invalidCoords;
+            }
+
+            return justReleasedOnCoords;
+        }
 
 
-
-        private async void DoMove(Vector2 justReleasedOnCoords, Vector2 justPressedCoords, Vector2 selectedCoords, bool someoneFlipped)
+        private void DoMove(Vector2 justReleasedOnCoords, Vector2 justPressedCoords, Vector2 selectedCoords, bool someoneFlipped)
         {
             // IF RELEASED ON DIFFERENT BLOCK THAN PRESSED-BLOCK -> try SWAP
             if (justReleasedOnCoords != justPressedCoords)
@@ -195,8 +241,8 @@ namespace Main
 
                             if (CheckIfWin())
                             {
-                                await ToSignal(_tween, "tween_all_completed");
-                                Win();
+                                //await ToSignal(_tween, "tween_all_completed");
+                                Win(finalTime - 0.3f);
                                 return;
                             }
 
@@ -236,25 +282,47 @@ namespace Main
                 return;
             }
         }
-        private void Win()
+        private void Win(float delay = 0.0f)
         {
-            SaveManager.SaveHighscore(_moves);
-            Restart();
+            int oldHighscore = SaveManager.LoadHighscore();
+            if (oldHighscore == -1 || oldHighscore > _moves)
+            {
+                SaveManager.SaveHighscore(Math.Min(100, _moves));
+            }
+            SetUpWin(delay);
+            TweenManager.Start(_tween);
+            EmitSignal(nameof(WinState), true);
             return;
         }
-        public void Restart()
+        public async void Restart()
         {
+
+            if (_gridState == Globals.GRIDSTATE.WIN)
+            {
+                foreach (Label label in _winLabel.GetChildren())
+                {
+                    label.Visible = false;
+                }
+            }
+
             _moves = 0;
             EmitSignal(nameof(UpdateMoves), 0);
+
+            if (_tween.IsActive())
+            {
+                await ToSignal(_tween, "tween_all_completed");
+            }
 
             _someoneFlipped = false;
             _justPressedCoords = _invalidCoords;
             _selectedCoords = _invalidCoords;
             _gridState = Globals.GRIDSTATE.IDLE;
+            _auxBlocks.Clear();
 
-            Globals.ColorPalette.RandomizeColorList();
+            Globals.ColorManager.RandomizeColorList();
             RandomizeAuxColorArray();
             PopulateRemainingColorsArray();
+
 
             for (int row = 0; row < _gridSize[1]; row++)
             {
@@ -276,14 +344,14 @@ namespace Main
         }
         private async void GenerateBlocks()
         {
-            Globals.ColorPalette.RandomizeColorList();
+            Globals.ColorManager.RandomizeColorList();
             CreateBlocks(false, true);
 
             _blocks = new Godot.Collections.Array<Block>(GetTree().GetNodesInGroup("Block"));
             TweenManager.GenerateBlocks(_tween, _blocks);
 
+            _gridState = Globals.GRIDSTATE.GENERATING;
             await ToSignal(GetTree().CreateTimer(1f), "timeout");
-           _gridState = Globals.GRIDSTATE.GENERATING;
             TweenManager.Start(_tween);
         }
 
@@ -291,7 +359,7 @@ namespace Main
 
         protected override float SetUpSelect(Vector2 coords, bool someoneFlipped = false, float delay = 0f)
         {
-            _gridState = Globals.GRIDSTATE.SELECTING;
+            _gridState = Globals.GRIDSTATE.ANIMATING;
             if (!someoneFlipped)
             {
                 _someoneFlipped = true;
@@ -302,7 +370,7 @@ namespace Main
         }
         protected override float SetUpUnselect(Vector2 coords, float delay = 0f)
         {
-            _gridState = Globals.GRIDSTATE.UNSELECTING;
+            _gridState = Globals.GRIDSTATE.ANIMATING;
             _selectedCoords = _invalidCoords;
             _someoneFlipped = false;
 
@@ -310,7 +378,7 @@ namespace Main
         }
         protected override float SetUpUnselect(Vector2 coords1, Vector2 coords2, float delay = 0f)
         {
-            _gridState = Globals.GRIDSTATE.UNSELECTING;
+            _gridState = Globals.GRIDSTATE.ANIMATING;
             _selectedCoords = _invalidCoords;
             _someoneFlipped = false;
 
@@ -318,7 +386,7 @@ namespace Main
         }
         protected override float SetUpSwitchOff(Vector2 coords1, Vector2 coords2, float delay = 0f)
         {
-            _gridState = Globals.GRIDSTATE.INACTIVATING;
+            _gridState = Globals.GRIDSTATE.ANIMATING;
             _someoneFlipped = false;
             _selectedCoords = _invalidCoords;
             _remaingColorsList[GetBlock(coords1).ColorId] -= 2;
@@ -327,15 +395,30 @@ namespace Main
         }
         protected override float SetUpSwapBlocks(Vector2 fromCoords, Vector2 toCoords, float delay = 0f)
         {
-            _gridState = Globals.GRIDSTATE.SWAPPING;
+            _gridState = Globals.GRIDSTATE.ANIMATING;
 
             Block fromBlock = GetBlock(fromCoords);
             Block toBlock = GetBlock(toCoords);
 
             return base.SetUpSwapBlocks(fromCoords, toCoords, delay);
         }
+        private float SetUpWin(float delay = 0.0f)
+        {
+            _gridState = Globals.GRIDSTATE.WINNING;
 
+            return TweenManager.Win(_tween, this, delay);
+        }
+        private void SetwinLabel()
+        {
+            int i = 0;
+            foreach (Label label in _winLabel.GetChildren())
+            {
+                label.RectSize = _cellSize;
+                label.RectGlobalPosition = GetBlock(i, 2).GlobalPosition - _cellSize / 2;
+                i++;
+            }
 
+        }
 
         private bool CheckValidSwap(Vector2 coords1, Vector2 coords2)
         {
@@ -361,9 +444,14 @@ namespace Main
 
             bool positionBool = base.CheckIfAdjoint(coords1, coords2);
 
+            if (!positionBool)
+            {
+                return false;
+            }
+
             bool isIdle = (GetBlock(coords1).State == Globals.BLOCKSTATE.IDLE && GetBlock(coords2).State == Globals.BLOCKSTATE.IDLE);
 
-            return positionBool && isIdle;
+            return isIdle;
         }
         private bool IsInGrid(Vector2 position)
         {
@@ -374,6 +462,21 @@ namespace Main
             bool inBound = (testPosition.x >= 0) && (testPosition.x < _gridExtent.x) && (testPosition.y >= 0) && (testPosition.y < _gridExtent.y);
             bool onBlokcs = (remainderX <= _cellSize.x) && (remainderY <= _cellSize.y);
             return (inBound && onBlokcs);
+        }
+        private bool IsCoordsValid(Vector2 coords)
+        {
+            if (coords.x < 0 || coords.y < 0)
+            {
+                return false;
+            }
+
+            if (coords.x >= _gridSize.x || coords.y >= _gridSize.y)
+            {
+                return false;
+            }
+
+            return true;
+
         }
 
 
@@ -408,6 +511,13 @@ namespace Main
 
         public void _on_GridTween_tween_all_completed()
         {
+            if (_gridState == Globals.GRIDSTATE.WINNING)
+            {
+                _gridState = Globals.GRIDSTATE.WIN;
+                EmitSignal(nameof(WinState), false);
+                return;
+            }
+
             _gridState = Globals.GRIDSTATE.IDLE;
         }
     }

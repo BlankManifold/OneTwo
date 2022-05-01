@@ -6,9 +6,32 @@ using BoolMatrix = Godot.Collections.Array<Godot.Collections.Array<bool>>;
 namespace Main
 {
     public class FakeGrid : Node2D
-    {
-
+    {   
+        protected AudioManager _audioManager;
+        public AudioManager AudioManager { get {return _audioManager;}}
         
+        
+        [Export]
+        public int _soundSelectDB;
+        [Export]
+        public int _soundSwapDB;
+        [Export]
+        public int _soundSwitchOffDB;
+        [Export]
+        public int _soundWinDB;
+
+        [Export]
+        private AudioStream _soundSelect;
+        
+        [Export]
+        private AudioStream _soundWin;
+        
+        [Export]
+        private AudioStream _soundSwap;
+                
+        [Export]
+        private AudioStream _soundSwitchOff;
+
         [Export]
         protected Vector2 _gridSize = new Vector2(4, 4);
         public Vector2 GridSize { get { return _gridSize; } }
@@ -39,11 +62,11 @@ namespace Main
         protected Block[,] _blocksMatrix;
         protected Godot.Collections.Array<Block> _blocks;
         protected Tween _tween;
-        public Tween Tween { get {return _tween;} }
+        public Tween Tween { get { return _tween; } }
 
-        private List<Block> _auxBlocks = new List<Block>(){};
-
-
+        protected List<Block> _auxBlocks = new List<Block>() { };
+        
+        
         public void Init(bool offMovable, Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, int xConstraint, bool animateGeneration = true, List<int> colorsAuxList = null)
         {
             _offMovable = offMovable;
@@ -73,6 +96,7 @@ namespace Main
 
         public override void _Ready()
         {
+            _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
             _tween = GetNode<Tween>("GridTween");
             _blocksContainer = GetNode<Node2D>("Blocks");
             _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
@@ -83,6 +107,24 @@ namespace Main
         }
 
 
+        public AudioStream GetAudioStream(string name)
+        {
+            switch (name)
+            {
+                case "Select":
+                    return _soundSelect;
+                case "SwitchOff":
+                    return _soundSwitchOff;
+                case "Swap":
+                    return _soundSwap;
+                case "Win":
+                    return _soundWin;
+                    
+                default:
+                    return null;
+                    
+            }
+        }
         public Block GetBlock(Vector2 cellCoords)
         {
             if (cellCoords != _invalidCoords)
@@ -109,19 +151,28 @@ namespace Main
             }
         }
 
-
+        public List<Block> GetRow(int row)
+        {
+            List<Block> blocks = new List<Block>(){};
+            for (int i = 0; i < _gridSize.x; i++)
+            {
+                blocks.Add(_blocksMatrix[row, i]);
+            }
+            return blocks;
+        }
 
         protected void Select(Vector2 coords, bool someoneFlipped = false, float delay = 0f)
         {
             float finalTime = SetUpSelect(coords, someoneFlipped, delay);
             TweenManager.Start(_tween, finalTime, GetBlock(coords));
+
         }
-        protected virtual float SetUpSelect(Vector2 coords,  bool someoneFlipped = false, float delay = 0f)
+        protected virtual float SetUpSelect(Vector2 coords, bool someoneFlipped = false, float delay = 0f)
         {
             Block block = GetBlock(coords);
             block.Flip();
 
-            return TweenManager.SelectModulate(_tween, block, delay);
+            return TweenManager.SelectModulate(_tween, this, block, delay);
         }
         protected void Unselect(Vector2 coords, float delay = 0f)
         {
@@ -193,7 +244,7 @@ namespace Main
 
             return finalTime;
         }
-        
+
         protected bool CheckIfAdjointsOn(Vector2 coords)
         {
             Vector2 diffCoords = Vector2.Zero;
@@ -248,10 +299,15 @@ namespace Main
 
         protected virtual bool CheckIfAdjoint(Vector2 coords1, Vector2 coords2)
         {
+            if (coords1 == _invalidCoords || coords2 == _invalidCoords)
+            {
+                return false;
+            }
+
             Vector2 coordsDiff = coords1 - coords2;
             bool positionBool = (Math.Abs(coordsDiff[0]) + Math.Abs(coordsDiff[1]) <= 2 && Math.Abs(coordsDiff[0]) < 2 && Math.Abs(coordsDiff[1]) < 2);
 
-           return positionBool;
+            return positionBool;
         }
 
         public void CreateBlocks(bool visible = false, bool rndColor = false)
@@ -283,7 +339,7 @@ namespace Main
             {
                 for (int col = 0; col < _gridSize[0]; col++)
                 {
-                    Block block = GetBlock(col,row);
+                    Block block = GetBlock(col, row);
 
                     block.Reset();
 
@@ -302,7 +358,7 @@ namespace Main
             {
                 for (int col = 0; col < _gridSize[0]; col++)
                 {
-                    Block block = GetBlock(col,row);
+                    Block block = GetBlock(col, row);
                     block.Reset();
 
                     if (!offArray[row][col])
@@ -340,7 +396,8 @@ namespace Main
         {
             foreach (Block auxBlock in _auxBlocks)
             {
-                auxBlock.QueueFree();
+                if (!auxBlock.IsQueuedForDeletion())
+                    auxBlock.CallDeferred("queue_free");
             }
             _auxBlocks.Clear();
         }

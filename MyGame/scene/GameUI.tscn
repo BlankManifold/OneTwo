@@ -1,7 +1,43 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/block.png" type="Texture" id=1]
 [ext_resource path="res://scripts/GameUI.cs" type="Script" id=2]
+[ext_resource path="res://assets/helpIcon.png" type="Texture" id=3]
+[ext_resource path="res://assets/Moves.tres" type="DynamicFont" id=4]
+[ext_resource path="res://assets/settingsIcon.png" type="Texture" id=5]
+[ext_resource path="res://assets/restartIcon.png" type="Texture" id=6]
+
+[sub_resource type="Animation" id=1]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("RestartButton:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "WinState"
+length = 4.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("RestartButton:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ), Color( 0.643137, 0.596078, 0.47451, 1 ), Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
 
 [node name="GameUI" type="Control" groups=["GameUI"]]
 anchor_right = 1.0
@@ -10,70 +46,133 @@ rect_pivot_offset = Vector2( -1596, -338 )
 mouse_filter = 2
 script = ExtResource( 2 )
 __meta__ = {
+"_edit_horizontal_guides_": [ 644.0, 984.0 ],
 "_edit_use_anchors_": false
 }
 _active = true
 _buttonGroupName = "GameUIButton"
 
 [node name="RestartButton" type="TextureButton" parent="." groups=["GameUIButton"]]
+self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-margin_left = -30.0
-margin_top = -92.0
-margin_right = 34.0
-margin_bottom = -28.0
+margin_left = -43.0
+margin_top = -182.0
+margin_right = 27.0
+margin_bottom = -112.0
+rect_min_size = Vector2( 40, 40 )
+rect_scale = Vector2( 1.2, 1.2 )
 texture_normal = ExtResource( 1 )
+expand = true
 __meta__ = {
+"_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
+[node name="TextureRect" type="TextureRect" parent="RestartButton"]
+self_modulate = Color( 0.760784, 0.729412, 0.65098, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -28.0
+margin_top = -28.0
+margin_right = 28.0
+margin_bottom = 28.0
+rect_rotation = -90.0
+rect_pivot_offset = Vector2( 28, 28 )
+texture = ExtResource( 6 )
+expand = true
+
 [node name="SettingsButton" type="TextureButton" parent="." groups=["GameUIButton"]]
+self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -88.0
 margin_top = -96.0
-margin_right = -24.0
-margin_bottom = -32.0
+margin_right = -32.0
+margin_bottom = -40.0
+rect_min_size = Vector2( 48, 48 )
+rect_scale = Vector2( 1.2, 1.2 )
 texture_normal = ExtResource( 1 )
+expand = true
 __meta__ = {
+"_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
+[node name="TextureRect" type="TextureRect" parent="SettingsButton"]
+self_modulate = Color( 0.760784, 0.729412, 0.65098, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -30.0
+margin_top = -29.0
+margin_right = 26.0
+margin_bottom = 27.0
+texture = ExtResource( 5 )
+expand = true
+
 [node name="HelpButton" type="TextureButton" parent="." groups=["GameUIButton"]]
+self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -168.0
-margin_top = -96.0
-margin_right = -104.0
-margin_bottom = -32.0
+margin_left = -176.0
+margin_top = -95.9999
+margin_right = -120.0
+margin_bottom = -40.0
+rect_min_size = Vector2( 48, 48 )
+rect_scale = Vector2( 1.2, 1.2 )
 texture_normal = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="HelpButton"]
+self_modulate = Color( 0.760784, 0.729412, 0.65098, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -25.0
+margin_top = -25.0
+margin_right = 25.0
+margin_bottom = 25.0
+texture = ExtResource( 3 )
+expand = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="MovesLabel" type="Label" parent="."]
-self_modulate = Color( 0, 0, 0, 1 )
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -96.0
-margin_top = -326.0
-margin_right = 100.0
-margin_bottom = -288.0
-align = 1
+margin_left = -115.0
+margin_top = -451.0
+margin_right = 115.0
+margin_bottom = -397.0
+custom_colors/font_color = Color( 0.760784, 0.729412, 0.65098, 1 )
+custom_constants/shadow_offset_x = 0
+custom_constants/line_spacing = 0
+custom_constants/shadow_as_outline = 0
+custom_fonts/font = ExtResource( 4 )
+text = "MOVES: 99"
 valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TopPosition" type="Position2D" parent="."]
-
-[node name="BottomPosition" type="Position2D" parent="."]
-position = Vector2( 264, 606 )
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 1 )
+anims/WinState = SubResource( 2 )

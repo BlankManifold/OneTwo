@@ -9,6 +9,8 @@ namespace Main
         private FakeGrid _grid;
         private Tween _tween;
         private Label _label;
+        private AnimationPlayer _animationPlayer;
+    
         private int _helpIndex = 0;
 
         private BoolMatrix _resetOffArray = new BoolMatrix {new BoolArray {true, true,true,true},
@@ -16,7 +18,7 @@ namespace Main
                                                             new BoolArray {false,true,false,false},
                                                             new BoolArray {false,false,true,false},
                                                             new BoolArray {true,false,true,false},
-                                                            new BoolArray {false,false,false,false}
+                                                            new BoolArray {false,false,true,true}
                                                             };
         private delegate void HelpTweenDelegate(float delay = 0.0f);
         private HelpTweenDelegate _helpTweenFunction;
@@ -29,12 +31,16 @@ namespace Main
         private string _helpTip2 = "";
         [Export(PropertyHint.MultilineText)]
         private string _helpTip3 = "";
+        
+        [Export(PropertyHint.MultilineText)]
+        private string _helpTip4 = "";
 
 
         public override void _Ready()
         {
             base._Ready();
             _label = GetNode<Label>("HelpLabel");
+            _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
         }
 
         public void InstanceGrid(Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, Vector2 cellRatio, int sizeConstraint)
@@ -42,7 +48,7 @@ namespace Main
 
             _grid = Globals.PackedScenes.FakeGridScene.Instance<FakeGrid>();
 
-            _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, sizeConstraint, false, Globals.ColorPalette.ColorList4x6);
+            _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, sizeConstraint, false, Globals.ColorManager.ColorList4x6);
             _grid.Rotation = Mathf.Pi;
 
             GetNode<Control>("GridControl").AddChild(_grid);
@@ -79,7 +85,13 @@ namespace Main
                     _label.Text = _helpTip2;
                     break;
                 case 3:
+                    _grid.ResetOff(_resetOffArray, true, false);
+                    totalTime = TweenManager.Help4x6Tip3(_grid, _tween, delay);
+                    _tween.InterpolateCallback(_grid, totalTime - 0.5f, "ResetOff", _resetOffArray, true, false);
                     _label.Text = _helpTip3;
+                    break;
+                case 4:
+                    _label.Text = _helpTip4;
                     break;
             }
             _tween.Start();
@@ -88,6 +100,7 @@ namespace Main
         public void StartHelpTween()
         {
             _helpTweenFunction(1f);
+            _animationPlayer.Play("HelpButtonModulate");
         }
         public void StopHelpTween()
         {
@@ -95,21 +108,26 @@ namespace Main
             _grid.DeleteAllAuxBlocks();
             _grid.Reset(true, false);
         }
+        public void StopHelp()
+        {
+            StopHelpTween();
+            _animationPlayer.Stop();
+        }
 
         public void ChangeTip()
         {
-            if (_helpIndex != 3)
+            if (_helpIndex != 4)
             {
                 StopHelpTween();
-                _helpTweenFunction(0.5f);
-
             }
+
+            _helpTweenFunction(0.5f);
         }
 
         public void _on_NextButton_pressed()
         {
             _helpIndex++;
-            if (_helpIndex > 3)
+            if (_helpIndex > 4)
             {
                 _helpIndex = 0;
             }
@@ -122,7 +140,7 @@ namespace Main
             _helpIndex--;
             if (_helpIndex < 0)
             {
-                _helpIndex = 3;
+                _helpIndex = 4;
             }
 
             ChangeTip();

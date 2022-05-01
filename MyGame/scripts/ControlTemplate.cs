@@ -20,10 +20,12 @@ namespace Main
             {
                 Godot.Collections.Array<TextureButton> buttons = new Godot.Collections.Array<TextureButton>(GetTree().GetNodesInGroup(_buttonGroupName));
                 Main mainNode = (Main)GetTree().GetNodesInGroup("Main")[0];
+                Color buttonsColor =  new Color(Globals.ColorManager.CurrentColorPalette.ButtonColor,1f);
 
                 foreach (TextureButton button in buttons)
                 {
                     button.Connect("pressed", mainNode, $"_on_{Name}_button_pressed", new Godot.Collections.Array { button.Name });
+                    button.SelfModulate = buttonsColor;
                 }
             }
             

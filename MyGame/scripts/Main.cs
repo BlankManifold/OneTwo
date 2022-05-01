@@ -1,10 +1,16 @@
-using System;
+using System.Collections.Generic;
 using Godot;
 
 namespace Main
 {
     public class Main : Node2D
     {
+
+        [Export(PropertyHint.ColorNoAlpha)]
+        private Color _defaultColor = Globals.ColorManager.CurrentColorPalette.DefaultColor;
+
+        [Export(PropertyHint.ColorNoAlpha)]
+        private Color _offColor = Globals.ColorManager.CurrentColorPalette.OffColor;
         private Grid _grid;
         // private GameUI _gameUI;
         private ControlTemplate _settingsControl;
@@ -15,28 +21,40 @@ namespace Main
         private int _highscore = -1;
         private Label _highscoreLabel;
 
+        private AudioManager _audioManager;
+        private AudioStreamPlayer _mainAudioPlayer;
+        private GameUI _gameUI;
+
+        private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary { { "MusicOn", true }, { "SoundOn", true } };
+
         public override void _Ready()
         {
+            GetNode<ColorRect>("BackgroundLayer/ColorRect").Color = Globals.ColorManager.CurrentColorPalette.BackgroundColorMain;
+            GetNode<TextureRect>("BackgroundLayer/TextureRect").Modulate = new Color(Globals.ColorManager.CurrentColorPalette.BackgroundColorSecondary, 0.5f);
             // _gameUI = GetNode<GameUI>("GridLayer/MainNode/GameUI");
             _gridControl = GetNode<Control>("GridLayer/MainControl/GridControl");
+            _gameUI = GetNode<GameUI>("GridLayer/MainControl/GameUI");
             _settingsControl = GetNode<ControlTemplate>("GridLayer/SettingsControl");
             _mainControl = GetNode<ControlTemplate>("GridLayer/MainControl");
             _helpControl = GetNode<HelpControl>("GridLayer/HelpControl");
             _tween = GetNode<Tween>("MainTween");
+            _audioManager = GetNode<AudioManager>("AudioManager");
+            _mainAudioPlayer = _audioManager.GetNode<AudioStreamPlayer>("MainAudioPlayer");
 
             _highscoreLabel = _settingsControl.GetNode<Label>("HighscoreLabel");
-            _highscore = SaveManager.LoadHighscore();
-
-            if (_highscore != -1)
-            {
-                _highscoreLabel.Text = $"Highscore: {_highscore}";
-            }
-
+            UpdateHighscore();
+            InitSettings();
 
             // PackedScene _gridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
             _grid = Globals.PackedScenes.GridScene.Instance<Grid>();
 
-            int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
+            int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 100;
+
+            if (!OS.HasTouchscreenUiHint())
+            {
+                sizeConstraint = (int)GetViewport().Size.x - 100;
+            }
+
             Vector2 cellRatio = new Vector2(1f, 1f);
 
             _grid.Init(true, new Vector2(4, 6), new Vector2(64, 64) * cellRatio, new Vector2(10, 10), sizeConstraint);
@@ -50,22 +68,43 @@ namespace Main
 
         }
 
+        private void InitSettings()
+        {
+            _settingsDict = SaveManager.LoadSettings();
+
+            _audioManager.SoundOn = (bool)_settingsDict["SoundOn"];
+            _audioManager.MusicOn = (bool)_settingsDict["MusicOn"];
+
+            if ((bool)_settingsDict["MusicOn"])
+            {
+                _mainAudioPlayer.Play();
+            }
+
+            _settingsControl.GetNode<TextureButton>("MusicRect/MusicOnButton").Pressed = !_audioManager.MusicOn;
+            _settingsControl.GetNode<TextureButton>("SoundRect/SoundOnButton").Pressed = !_audioManager.SoundOn;
+
+        }
 
         public void _on_GameUI_button_pressed(string buttonName)
         {
             switch (buttonName)
             {
                 case "RestartButton":
-                    _grid.Restart();
+                    if (_grid.GridState != Globals.GRIDSTATE.GENERATING && _grid.GridState != Globals.GRIDSTATE.WINNING)
+                    {
+                        if (_grid.GridState == Globals.GRIDSTATE.WIN)
+                        {
+                            _gameUI.ResetIdleState();
+                        }
+
+                        _grid.Restart();
+                    }
+
                     break;
 
                 case "SettingsButton":
-                    _highscore = SaveManager.LoadHighscore();
-                    
-                    if (_highscore != -1)
-                    {
-                        _highscoreLabel.Text = $"Highscore: {_highscore}";
-                    }
+
+                    UpdateHighscore();
 
                     ChangePanel(_settingsControl, _mainControl);
                     break;
@@ -81,9 +120,27 @@ namespace Main
             switch (buttonName)
             {
                 case "SoundOnButton":
+                    _audioManager.SoundOn = !_audioManager.SoundOn;
+                    _settingsDict["SoundOn"] = _audioManager.SoundOn;
+                    SaveManager.SaveSettings(_settingsDict);
+
                     break;
 
-                case "MusicButton":
+                case "MusicOnButton":
+                    _audioManager.MusicOn = !_audioManager.MusicOn;
+
+                    _settingsDict["MusicOn"] = _audioManager.MusicOn;
+                    SaveManager.SaveSettings(_settingsDict);
+
+                    if (_audioManager.MusicOn)
+                    {
+                        _mainAudioPlayer.Play();
+                    }
+                    else
+                    {
+                        _mainAudioPlayer.Stop();
+                    }
+
                     break;
 
                 case "BackButton":
@@ -96,10 +153,14 @@ namespace Main
             switch (buttonName)
             {
                 case "BackButton":
-                    _helpControl.StopHelpTween();
+                    _helpControl.StopHelp();
                     ChangePanel(_mainControl, _helpControl);
                     break;
             }
+        }
+        public void _on_Grid_WinState(bool winning)
+        {
+            _gameUI.SetWinState(winning);
         }
 
 
@@ -112,6 +173,22 @@ namespace Main
         {
             Globals.GridInfo.UpdateGridInfo(_grid.GridSize, _grid.CellSize, _grid.CellBorder, _grid.Offset);
         }
+        private void UpdateHighscore()
+        {
+            _highscore = SaveManager.LoadHighscore();
+
+            if (_highscore != -1)
+            {
+                _highscoreLabel.Text = $"HIGHSCORE: {_highscore.ToString("D2")}";
+
+                if (_highscore > 99)
+                {
+                    _highscoreLabel.Text = $"HIGHSCORE: 99+";
+                }
+            }
+        }
+
+
 
         private async void ChangePanel(ControlTemplate controlIn, ControlTemplate controlOut)
         {
@@ -126,6 +203,11 @@ namespace Main
 
             controlOut.UpdateState();
             controlIn.UpdateState();
+        }
+
+        public void _on_ColorPicker_color_changed(Color color)
+        {
+            Globals.ColorManager.CurrentColorPalette.DefaultColor = color;
         }
 
 

@@ -1,27 +1,42 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://scripts/Main.cs" type="Script" id=1]
 [ext_resource path="res://scene/SettingsControl.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scene/MainControl.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scene/HelpControl.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/backGround.png" type="Texture" id=5]
+[ext_resource path="res://assets/the-long-ride-home-sky-toes-main-version-03-28-7946.mp3" type="AudioStream" id=6]
+[ext_resource path="res://scene/AudioManager.tscn" type="PackedScene" id=7]
 
 [node name="Main" type="Node2D" groups=["Main"]]
 script = ExtResource( 1 )
+_defaultColor = Color( 1, 1, 1, 1 )
 
 [node name="MainTween" type="Tween" parent="."]
+
+[node name="AudioManager" parent="." groups=["AudioManager"] instance=ExtResource( 7 )]
+
+[node name="MainAudioPlayer" type="AudioStreamPlayer" parent="AudioManager"]
+stream = ExtResource( 6 )
+volume_db = -10.0
+
+[node name="GridAudioPlayer" type="AudioStreamPlayer" parent="AudioManager"]
 
 [node name="GridLayer" type="CanvasLayer" parent="."]
 
 [node name="MainControl" parent="GridLayer" instance=ExtResource( 3 )]
 
 [node name="SettingsControl" parent="GridLayer" instance=ExtResource( 2 )]
-margin_left = -540.0
-margin_right = -540.0
-mouse_filter = 0
+anchor_left = -1.148
+anchor_right = -0.148
+margin_left = -0.0800171
+margin_right = -0.0800018
 
 [node name="HelpControl" parent="GridLayer" instance=ExtResource( 4 )]
-margin_left = 540.0
-margin_right = 540.0
+anchor_left = 1.148
+anchor_right = 2.148
+margin_left = -0.919983
+margin_right = -0.920044
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="."]
 layer = -2
@@ -30,7 +45,21 @@ layer = -2
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color( 0.317647, 0.313726, 0.243137, 1 )
+color = Color( 0.117647, 0.0980392, 0.0980392, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect" type="TextureRect" parent="BackgroundLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -180.0
+margin_bottom = -360.0
+rect_scale = Vector2( 1.5, 1.5 )
+mouse_filter = 2
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }

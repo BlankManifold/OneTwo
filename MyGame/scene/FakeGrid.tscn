@@ -1,9 +1,20 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/FakeGrid.cs" type="Script" id=1]
+[ext_resource path="res://assets/mixkit-soap-bubble-sound-2925.wav" type="AudioStream" id=2]
+[ext_resource path="res://assets/mixkit-bubbly-achievement-tone-3193.wav" type="AudioStream" id=3]
+[ext_resource path="res://assets/mixkit-magic-bubbles-spell-2999.wav" type="AudioStream" id=4]
+[ext_resource path="res://assets/mixkit-wind-chimes-2014.wav" type="AudioStream" id=5]
 
 [node name="FakeGrid" type="Node2D"]
 script = ExtResource( 1 )
+_soundSelectDB = -5
+_soundSwapDB = -7
+_soundSwitchOffDB = -8
+_soundSelect = ExtResource( 2 )
+_soundWin = ExtResource( 5 )
+_soundSwap = ExtResource( 4 )
+_soundSwitchOff = ExtResource( 3 )
 
 [node name="Blocks" type="Node2D" parent="."]
 

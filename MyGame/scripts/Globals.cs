@@ -26,28 +26,78 @@ namespace Globals
     }
     public enum GRIDSTATE
     {
-        IDLE, SWAPPING, INACTIVATING, SELECTING, UNSELECTING, GENERATING
+        IDLE, ANIMATING, GENERATING, WINNING, WIN
     }
 
-    public static class ColorPalette
+    public struct ColorPalette
     {
-        public static Color DefaultColor = new Color(0.2f, 0.20f, 0.2f);
-        public static Color NoColor = new Color(0.2f, 0.20f, 0.2f, 0f);
-        public static Color OffColor = new Color(0f, 0f, 0f);
-        static List<Color> _palette1 = new List<Color>()
+        public List<Color> Palette;
+        public Color DefaultColor;
+        public Color OffColor;
+        public Color NoColor;
+        public Color BackgroundColorMain;
+        public Color BackgroundColorSecondary;
+        public Color ButtonColor;
+
+        public ColorPalette(List<Color> palette, Color defaultColor, Color offColor, Color noColor, Color backgroundColorMain, Color backgroundColorSecondary, Color buttonColor)
         {
-            new Color(0f, 0.058824f, 0.333333f),
-            new Color(1f, 1f, 1f),
-            new Color(0.67451f, 0.196078f, 0.207843f),
-            new Color(0.015686f, 0.490196f, 0.329412f),
-        };
-        static List<Color> _palette1rnd = new List<Color>()
+            Palette = palette;
+            DefaultColor = defaultColor;
+            OffColor = offColor;
+            NoColor = noColor;
+            BackgroundColorMain = backgroundColorMain;
+            BackgroundColorSecondary = backgroundColorSecondary;
+            ButtonColor = buttonColor;
+        }
+        public ColorPalette(string defaultColor, string offColor, string noColor, string backgroundColorMain, string backgroundColorSecondary, string buttonColor, params string[] paletteColors)
         {
-            new Color(0f, 0.058824f, 0.333333f),
-            new Color(1f, 1f, 1f),
-            new Color(0.67451f, 0.196078f, 0.207843f),
-            new Color(0.015686f, 0.490196f, 0.329412f),
-        };
+            Palette = ColorManager.CPalette(paletteColors);
+            DefaultColor =  ColorManager.CHex(defaultColor);
+            OffColor = ColorManager.CHex(offColor);
+            NoColor = ColorManager.CHex(noColor);
+            BackgroundColorMain = ColorManager.CHex(backgroundColorMain);
+            BackgroundColorSecondary = ColorManager.CHex(backgroundColorSecondary);
+            ButtonColor = ColorManager.CHex(buttonColor);
+        }
+    }
+    public static class ColorManager
+    {
+        
+        public static Color CHex(string hex)
+        {
+            return new Color(hex);
+        }
+        public static List<Color> CPalette(params Color[] colors)
+        {
+            List<Color> palette = new List<Color>();
+
+            foreach (Color c in colors)
+            {
+                palette.Add(c);
+            }
+
+            return palette;
+        }
+        public static List<Color> CPalette(params string[] colors)
+        {
+            List<Color> palette = new List<Color>();
+
+            foreach (string c in colors)
+            {
+                palette.Add(CHex(c));
+            }
+
+            return palette;
+        }
+
+        static ColorPalette _paletteJorge = new ColorPalette
+            (
+               "a3ada2","c2baa6","00000000","e4e0cf","c2baa6","f1efe4", "6ea08e","656f76","cbbb45","e78c54"
+            );
+
+
+        public static ColorPalette CurrentColorPalette = _paletteJorge;
+        public static ColorPalette CurrentColorPaletteRnd = CurrentColorPalette;
 
         public static List<int> ColorList4x6 = new List<int> {  0,1,2,3,
                                                                 0,1,2,3,
@@ -58,18 +108,24 @@ namespace Globals
                                                             };
         public static List<int> ColorList4x4 = new List<int> { 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3 };
 
+
         public static Color GetColor(int index)
         {
-            return _palette1[index];
+            return CurrentColorPalette.Palette[index];
         }
+
         public static Color GetColorRandom(int index)
         {
-            return _palette1rnd[index];
+            return CurrentColorPaletteRnd.Palette[index];
         }
 
         public static void RandomizeColorList()
         {
-            _palette1rnd = _palette1.OrderBy(item => RandomManager.rnd.Next()).ToList();
+            CurrentColorPaletteRnd.Palette = CurrentColorPalette.Palette.OrderBy(item => RandomManager.rnd.Next()).ToList();
+        }
+        public static List<Color> GetRandomizeColorList()
+        {
+           return CurrentColorPalette.Palette.OrderBy(item => RandomManager.rnd.Next()).ToList();
         }
     }
 
@@ -141,8 +197,6 @@ namespace Globals
         public static Vector2 GridSize;
         public static Vector2 GridOffset;
         public static float DiagFactor;
-
-        public static float ScaleFactor = 1.3f;
 
         public static void UpdateGridInfo(Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, Vector2 gridOffset)
         {

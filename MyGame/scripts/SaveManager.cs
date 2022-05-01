@@ -11,7 +11,6 @@ namespace Main
             Error err = file.Open("user://highscore.data", File.ModeFlags.Read);
             if (err != 0)
             {
-                GD.Print("Error: loading player data");
                 return -1;
             }
 
@@ -27,11 +26,37 @@ namespace Main
             Error err = file.Open("user://highscore.data", File.ModeFlags.Write);
             if (err != 0)
             {
-                GD.Print("Error: saving player data");
                 return;
             }
 
             file.StoreVar(highscore);
+            file.Close();
+        }
+        public static Godot.Collections.Dictionary LoadSettings()
+        {
+            File file = new File();
+            Error err = file.Open("user://settings.data", File.ModeFlags.Read);
+            if (err != 0)
+            {
+                return new Godot.Collections.Dictionary() { { "MusicOn", true }, { "SoundOn", true } };
+            }
+
+            Godot.Collections.Dictionary settingsDict = (Godot.Collections.Dictionary)file.GetVar();
+
+            file.Close();
+
+            return settingsDict;
+        }
+        public static void SaveSettings(Godot.Collections.Dictionary settingsDict)
+        {
+            File file = new File();
+            Error err = file.Open("user://settings.data", File.ModeFlags.Write);
+            if (err != 0)
+            {
+                return;
+            }
+
+            file.StoreVar(settingsDict);
             file.Close();
         }
 
