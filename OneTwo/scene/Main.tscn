@@ -9,6 +9,7 @@
 [ext_resource path="res://scene/AudioManager.tscn" type="PackedScene" id=7]
 
 [node name="Main" type="Node2D" groups=["Main"]]
+z_as_relative = false
 script = ExtResource( 1 )
 _defaultColor = Color( 1, 1, 1, 1 )
 

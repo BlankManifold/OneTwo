@@ -50,12 +50,12 @@ namespace Main
             //_grid = Globals.PackedScenes.GridScene.Instance<Grid>();
             _grid = gridScene.Instance<RealGrid>();
 
-            int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 100;
+            int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
 
-            if (!OS.HasTouchscreenUiHint())
-            {
-                sizeConstraint = (int)GetViewport().Size.x - 100;
-            }
+            // if (!OS.HasTouchscreenUiHint())
+            // {
+            //     sizeConstraint = (int)GetViewport().Size.x - 100;
+            // }
 
             Vector2 cellRatio = new Vector2(1, 1);
             Vector2 cellSize = new Vector2(64, 64);

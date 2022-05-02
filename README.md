@@ -4,7 +4,6 @@
 <img src="stuffForREADME/cover.png" width="450">
 </p>
 
-
 My first game jam ever!
 A simple puzzle game made for [Newbies Game Jam (2022 - 1)](https://itch.io/jam/newbies), minimalism was the required theme!
 
@@ -13,6 +12,13 @@ OneTwo is now published at ...
 ## Objective
 
 Uncover, find and match all the pairs of adjacent blocks of the same color.  Try to solve the puzzle by minimizing your moves counter.
+
+<div>
+<p align="center">
+<img align="center" src="stuffForREADME/update5a.gif" width="225">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img align="center" src="stuffForREADME/update5b.gif" width="225">
+ </p>
+</div> 
 
 ## My goals
 
@@ -98,6 +104,8 @@ Change my mind a few times meanwhile...totally abstract or not? I tried a themed
 ### 01/05/22
 
 Time is ticking! Only 1.5 days left... Clean, elegant, general and reusable code is now only a vanished dream! A lot of bug solved brutally! Remain the biggest bug of all: HTML5 export doesn't work, work fine in the editor and on Android
+
+<img align="right" src="stuffForREADME/update5a.gif" width="250">
 
 * Completed `HelpControl` tween animation
 * Created win animation and win/winning state
