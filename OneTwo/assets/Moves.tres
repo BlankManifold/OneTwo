@@ -1,9 +1,10 @@
 [gd_resource type="DynamicFont" load_steps=2 format=2]
 
-[ext_resource path="res://assets/OfficialBook.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://assets/Louis George Cafe Bold.ttf" type="DynamicFontData" id=1]
 
 [resource]
-size = 53
+size = 55
 outline_color = Color( 0.760784, 0.729412, 0.65098, 1 )
 use_filter = true
+extra_spacing_char = 1
 font_data = ExtResource( 1 )

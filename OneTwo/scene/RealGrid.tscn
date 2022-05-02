@@ -5,12 +5,5 @@
 
 [node name="RealGrid" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
-_soundSelectDB = 0
-_soundSwapDB = 0
-_soundSwitchOffDB = 0
-_soundSelect = null
-_soundWin = null
-_soundSwap = null
-_soundSwitchOff = null
 
 [connection signal="tween_all_completed" from="GridTween" to="." method="_on_GridTween_tween_all_completed"]

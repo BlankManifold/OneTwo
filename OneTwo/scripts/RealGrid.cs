@@ -28,39 +28,39 @@ namespace Main
 
         public override void _Ready()
         {
-             
+
             _winLabel = GetParent().GetNode<Node>("WinLabel");
             _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
             _tween = GetNode<Tween>("GridTween");
             _blocksContainer = GetNode<Node2D>("Blocks");
             _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
 
-             
+
 
             PopulateAuxColorArray();
             RandomizeAuxColorArray();
             PopulateRemainingColorsArray();
 
-             
+
 
             _blocksMatrix = new Block[(int)_gridSize[1], (int)_gridSize[0]];
 
             Connect(nameof(UpdateMoves), (GameUI)GetTree().GetNodesInGroup("GameUI")[0], "_on_Grid_UpdateMoves");
             Connect(nameof(WinState), (Main)GetTree().GetNodesInGroup("Main")[0], "_on_Grid_WinState");
 
-             
+
 
             if (_animateGeneration)
             {
                 GenerateBlocks();
             }
 
-             
+
 
 
             SetwinLabel();
 
-             
+
 
         }
         public override void _UnhandledInput(InputEvent @event)
@@ -159,7 +159,7 @@ namespace Main
             {
                 return _invalidCoords;
             }
-            // 
+
             Vector2 cellCoords = Globals.Utilities.PositionToCellCoords(position, this);
 
             if (cellCoords[1] == 0)
@@ -356,28 +356,16 @@ namespace Main
         }
         private async void GenerateBlocks()
         {
-             
             Globals.ColorManager.RandomizeColorList();
-             
             CreateBlocks(false, true);
-             
 
             _blocks = new Godot.Collections.Array<Block>(GetTree().GetNodesInGroup("Block"));
-             
-            
             TweenManager.GenerateBlocks(_tween, _blocks);
-             
-
 
             _gridState = Globals.GRIDSTATE.GENERATING;
-             
-
             await ToSignal(GetTree().CreateTimer(1f), "timeout");
-             
-            
-            TweenManager.Start(_tween);
-             
 
+            TweenManager.Start(_tween);
         }
 
 

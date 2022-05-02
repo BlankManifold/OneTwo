@@ -151,7 +151,7 @@ namespace Main
 
         public static float GenerateBlocks(Tween tween, Godot.Collections.Array<Block> blocks)
         {
-             
+ 
            
             blocks = new Godot.Collections.Array<Block>(blocks.OrderBy(item => Globals.RandomManager.rnd.Next()).ToArray<Block>());
            // blocks.Shuffle();
@@ -163,7 +163,7 @@ namespace Main
             float totalTime = 0.0f;
             Color color;
             
-             
+ 
 
             foreach (Block block in blocks)
             {
@@ -187,7 +187,7 @@ namespace Main
                 delayNext += delayEach;
                 totalTime += delayEach + scaleTime;
             }
-             
+ 
             return totalTime;
         }
 
@@ -204,15 +204,17 @@ namespace Main
 
             float scaleTotalTime =  blocks.Count*delayEach + scaleTime;
             float totalTime = delay + scaleTotalTime;
+            float currentDelay;
             for (int i = 0; i < blocks.Count; i++)
             {
+                currentDelay = (blocks.Count-i-1)*delayEach;
                 Block block = blocks[i];
-                tween.InterpolateProperty(block, "scale", block.Scale, block.OriginalScale, scaleTime, Tween.TransitionType.Sine, delay: delay + (blocks.Count-i-1)*delayEach);
-                tween.InterpolateProperty(block, "modulate", Globals.ColorManager.CurrentColorPalette.OffColor, colors[i], modulateTime, Tween.TransitionType.Sine, delay: scaleTotalTime + delay);
-                tween.InterpolateCallback(winLabels[i], scaleTotalTime + delay, "set", "visible", true);
+                tween.InterpolateProperty(block, "scale", block.Scale, block.OriginalScale, scaleTime, Tween.TransitionType.Sine, delay: delay + currentDelay );
+                tween.InterpolateProperty(block, "modulate", Globals.ColorManager.CurrentColorPalette.OffColor, colors[i], modulateTime, Tween.TransitionType.Sine, delay: currentDelay + delay);
+                tween.InterpolateCallback(winLabels[blocks.Count-i-1], currentDelay + delay + modulateTime, "set", "visible", true);
             }
 
-             tween.InterpolateCallback(grid.AudioManager,  delay, "PlayAudioEffect", grid.GetAudioStream("Win"), grid._soundWinDB);
+             tween.InterpolateCallback(grid.AudioManager, scaleTotalTime +  delay - delayEach - modulateTime, "PlayAudioEffect", grid.GetAudioStream("Win"), grid._soundWinDB);
 
             return totalTime;
         }

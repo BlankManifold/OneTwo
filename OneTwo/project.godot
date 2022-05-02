@@ -10,7 +10,7 @@ config_version=4
 
 [application]
 
-config/name="MyGame"
+config/name="OneTwo"
 run/main_scene="res://scene/Main.tscn"
 config/icon="res://icon.png"
 
