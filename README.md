@@ -1,24 +1,30 @@
 # OneTwo
 
+<p align="center">
+<img src="stuffForREADME/cover.png" width="450">
+</p>
+
+
 My first game jam ever!
-A simple puzzle game made for [Newbies Game Jam (2022 - 1)](https://itch.io/jam/newbies) with MINIMALISM theme!
+A simple puzzle game made for [Newbies Game Jam (2022 - 1)](https://itch.io/jam/newbies), minimalism was the required theme!
 
 OneTwo is now published at ...
 
 ## Objective
 
+Uncover, find and match all the pairs of adjacent blocks of the same color.  Try to solve the puzzle by minimizing your moves counter.
 
 ## My goals
 
-​First game jam ever and third "complete" game I ever published! This time my goals are focused on time management and deadline stuff.  I will not try to tackle too many completely new stuff. After the voting deadline maybe I will do some much-needed code refactoring and maybe some game updates/expansion.
+First game jam ever and the third "complete" game I have ever published! This time, my goals are focused on time management and deadline stuff. I will not try to tackle too many completely new things. After the voting deadline, I will do some much-needed code refactoring and some game updates expansion....maybe.  
 
 ## Credits
 
-Because of my ignorance of music/audio/font I downloaded this free (I think) assets:
+Because of my ignorance in music/audio/font, I downloaded the following free assets:
 
-* Music:
-* Audio effect:
-* Font: 
+* Font: [https://www.dafont.com/it/louis-george-caf.font](https://www.dafont.com/it/louis-george-caf.font)
+* Music: [https://uppbeat.io/t/sky-toes/the-long-ride-home](https://uppbeat.io/t/sky-toes/the-long-ride-home) (License code: PSLYCCVB9DCLRBZ9)
+* Sound effects at [https://mixkit.co/free-sound-effects/](https://mixkit.co/free-sound-effects/)
 
 
 ## Progress Updates:
