@@ -58,6 +58,7 @@ namespace Main
         protected List<int> _colorsAuxList;
 
         protected PackedScene _blockScene;
+        public PackedScene BlockScene { get { return _blockScene; }}
         protected Node2D _blocksContainer;
         protected Block[,] _blocksMatrix;
         protected Godot.Collections.Array<Block> _blocks;
@@ -66,7 +67,7 @@ namespace Main
 
         protected List<Block> _auxBlocks = new List<Block>() { };
         
-        
+
         public void Init(bool offMovable, Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, int xConstraint, bool animateGeneration = true, List<int> colorsAuxList = null)
         {
             _offMovable = offMovable;

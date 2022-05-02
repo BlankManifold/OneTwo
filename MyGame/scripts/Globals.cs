@@ -5,21 +5,13 @@ using Godot;
 
 namespace Globals
 {
-    public static class PackedScenes
-    {
-        public static PackedScene GridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
-        public static PackedScene FakeGridScene = (PackedScene)ResourceLoader.Load("res://scene/FakeGrid.tscn");
-        public static PackedScene BlockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
+    // public static class PackedScenes
+    // {
+    //     public static PackedScene GridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
+    //     public static PackedScene FakeGridScene = (PackedScene)ResourceLoader.Load("res://scene/FakeGrid.tscn");
+    //     public static PackedScene BlockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
 
-    }
-    public enum BLOCKTYPE
-    {
-
-    }
-    public enum GAMESTATE
-    {
-
-    }
+    // }
     public enum BLOCKSTATE
     {
         IDLE, ANIMATING
@@ -155,9 +147,6 @@ namespace Globals
             int col = (int)(offsetPos.x / (cellSize.x + cellBorder.x));
             int row = (int)(offsetPos.y / (cellSize.y + cellBorder.y));
 
-            // GD.Print($"Pos: {position} -> {new Vector2(col, row)}");
-
-
             return new Vector2(col, row);
         }
         public static Vector2 CellCoordsToPosition(Vector2 cellCoords, Main.FakeGrid grid = null)
@@ -204,7 +193,7 @@ namespace Globals
             CellBorder = cellBorder;
             GridSize = gridSize;
             GridOffset = gridOffset;
-            //TODO: factor for x and y direction -> must know direction of swapping
+            // factor for x and y direction -> must know direction of swapping
             DiagFactor = Mathf.Sqrt2;
         }
     }

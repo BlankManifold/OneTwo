@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Godot;
 
 namespace Main
@@ -11,8 +10,7 @@ namespace Main
 
         [Export(PropertyHint.ColorNoAlpha)]
         private Color _offColor = Globals.ColorManager.CurrentColorPalette.OffColor;
-        private Grid _grid;
-        // private GameUI _gameUI;
+        private RealGrid _grid;
         private ControlTemplate _settingsControl;
         private ControlTemplate _mainControl;
         private HelpControl _helpControl;
@@ -29,6 +27,7 @@ namespace Main
 
         public override void _Ready()
         {
+             
             GetNode<ColorRect>("BackgroundLayer/ColorRect").Color = Globals.ColorManager.CurrentColorPalette.BackgroundColorMain;
             GetNode<TextureRect>("BackgroundLayer/TextureRect").Modulate = new Color(Globals.ColorManager.CurrentColorPalette.BackgroundColorSecondary, 0.5f);
             // _gameUI = GetNode<GameUI>("GridLayer/MainNode/GameUI");
@@ -43,10 +42,15 @@ namespace Main
 
             _highscoreLabel = _settingsControl.GetNode<Label>("HighscoreLabel");
             UpdateHighscore();
+             
             InitSettings();
+             
 
-            // PackedScene _gridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
-            _grid = Globals.PackedScenes.GridScene.Instance<Grid>();
+            PackedScene gridScene = (PackedScene)ResourceLoader.Load("res://scene/RealGrid.tscn");
+            //_grid = Globals.PackedScenes.GridScene.Instance<Grid>();
+            _grid = gridScene.Instance<RealGrid>();
+
+             
 
             int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 100;
 
@@ -55,16 +59,29 @@ namespace Main
                 sizeConstraint = (int)GetViewport().Size.x - 100;
             }
 
-            Vector2 cellRatio = new Vector2(1f, 1f);
+             
 
-            _grid.Init(true, new Vector2(4, 6), new Vector2(64, 64) * cellRatio, new Vector2(10, 10), sizeConstraint);
+            Vector2 cellRatio = new Vector2(1, 1);
+            Vector2 cellSize = new Vector2(64, 64);
+            Vector2 border =  new Vector2(10, 10);
+            Vector2 gridSize = new Vector2(4,6);
+            _grid.Init(true, gridSize, cellSize * cellRatio, border, sizeConstraint);
+             
             UpdateGridInfo();
 
-            _gridControl.AddChild(_grid);
+             
 
             RotateGrid();
 
-            _helpControl.InstanceGrid(new Vector2(4, 6), new Vector2(64, 64), new Vector2(10, 10), cellRatio, sizeConstraint - 50);
+             
+
+            _gridControl.AddChild(_grid);
+
+             
+
+            _helpControl.InstanceGrid(gridSize, cellSize, border, cellRatio, sizeConstraint - 50);
+
+             
 
         }
 
@@ -167,6 +184,7 @@ namespace Main
         public void RotateGrid()
         {
             _grid.Rotation = Mathf.Pi;
+             
         }
 
         private void UpdateGridInfo()

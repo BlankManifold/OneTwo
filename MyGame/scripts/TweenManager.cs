@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Main
 {
@@ -9,7 +10,7 @@ namespace Main
 
         public static float ScaleFactor = 2.5f;
         public static Vector2 Ones = Vector2.One;
-        public static PackedScene _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
+        //public static PackedScene _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
 
         public static float SelectModulate(Tween tween, FakeGrid grid, Block block, float delay)
         {
@@ -49,8 +50,8 @@ namespace Main
 
             float totalTime = delay + scaleTime + flashScaleTime - overlappingTime;
 
-            Block block1Ghost = _blockScene.Instance<Block>();
-            Block block2Ghost = _blockScene.Instance<Block>();
+            Block block1Ghost = grid.BlockScene.Instance<Block>();
+            Block block2Ghost = grid.BlockScene.Instance<Block>();
 
             block1Ghost.Copy(block1);
             block2Ghost.Copy(block2);
@@ -150,7 +151,10 @@ namespace Main
 
         public static float GenerateBlocks(Tween tween, Godot.Collections.Array<Block> blocks)
         {
-            blocks.Shuffle();
+             
+           
+            blocks = new Godot.Collections.Array<Block>(blocks.OrderBy(item => Globals.RandomManager.rnd.Next()).ToArray<Block>());
+           // blocks.Shuffle();
             float scaleTime = 0.2f;
             float modulateTime = 0.2f;
             float delayEach = 0.1f;
@@ -158,6 +162,8 @@ namespace Main
 
             float totalTime = 0.0f;
             Color color;
+            
+             
 
             foreach (Block block in blocks)
             {
@@ -181,10 +187,11 @@ namespace Main
                 delayNext += delayEach;
                 totalTime += delayEach + scaleTime;
             }
+             
             return totalTime;
         }
 
-        public static float Win(Tween tween, Grid grid, float delay)
+        public static float Win(Tween tween, RealGrid grid, float delay)
         {
             float scaleFactor = ScaleFactor;
             float scaleTime = 0.2f;

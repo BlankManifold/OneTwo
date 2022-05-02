@@ -46,7 +46,8 @@ namespace Main
         public void InstanceGrid(Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, Vector2 cellRatio, int sizeConstraint)
         {
 
-            _grid = Globals.PackedScenes.FakeGridScene.Instance<FakeGrid>();
+            //_grid = Globals.PackedScenes.FakeGridScene.Instance<FakeGrid>();
+            _grid = ((PackedScene)ResourceLoader.Load("res://scene/FakeGrid.tscn")).Instance<FakeGrid>();
 
             _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, sizeConstraint, false, Globals.ColorManager.ColorList4x6);
             _grid.Rotation = Mathf.Pi;
@@ -60,7 +61,6 @@ namespace Main
 
             _tween = _grid.Tween;
             _tween.Repeat = true;
-            //_tween.Connect("tween_all_completed", this, nameof(_on_HelpTween_tween_all_completed));
         }
 
         private void Help4x6(float delay = 0.0f)
@@ -146,10 +146,5 @@ namespace Main
             ChangeTip();
 
         }
-
-        // public void _on_HelpTween_tween_all_completed()
-        // {
-        //     _grid.Reset();
-        // }
     }
 }

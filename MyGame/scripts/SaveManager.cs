@@ -8,7 +8,7 @@ namespace Main
         public static int LoadHighscore()
         {
             File file = new File();
-            Error err = file.Open("user://highscore.data", File.ModeFlags.Read);
+            Error err = file.Open("user://highscore2.data", File.ModeFlags.Read);
             if (err != 0)
             {
                 return -1;
@@ -23,7 +23,7 @@ namespace Main
         public static void SaveHighscore(int highscore)
         {
             File file = new File();
-            Error err = file.Open("user://highscore.data", File.ModeFlags.Write);
+            Error err = file.Open("user://highscore2.data", File.ModeFlags.Write);
             if (err != 0)
             {
                 return;
@@ -35,7 +35,7 @@ namespace Main
         public static Godot.Collections.Dictionary LoadSettings()
         {
             File file = new File();
-            Error err = file.Open("user://settings.data", File.ModeFlags.Read);
+            Error err = file.Open("user://settings2.data", File.ModeFlags.Read);
             if (err != 0)
             {
                 return new Godot.Collections.Dictionary() { { "MusicOn", true }, { "SoundOn", true } };
@@ -50,7 +50,7 @@ namespace Main
         public static void SaveSettings(Godot.Collections.Dictionary settingsDict)
         {
             File file = new File();
-            Error err = file.Open("user://settings.data", File.ModeFlags.Write);
+            Error err = file.Open("user://settings2.data", File.ModeFlags.Write);
             if (err != 0)
             {
                 return;
