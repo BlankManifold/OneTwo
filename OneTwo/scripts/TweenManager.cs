@@ -9,8 +9,6 @@ namespace Main
         public static Vector2 Zeros = Vector2.Zero;
 
         public static float ScaleFactor = 2.5f;
-        public static Vector2 Ones = Vector2.One;
-        //public static PackedScene _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
 
         public static float SelectModulate(Tween tween, FakeGrid grid, Block block, float delay)
         {

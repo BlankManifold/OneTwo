@@ -100,7 +100,7 @@ namespace Main
             _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
             _tween = GetNode<Tween>("GridTween");
             _blocksContainer = GetNode<Node2D>("Blocks");
-            _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
+            _blockScene = Globals.PackedScenes.BlockScene;//(PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
 
             _blocksMatrix = new Block[(int)_gridSize[1], (int)_gridSize[0]];
 

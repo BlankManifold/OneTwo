@@ -4,14 +4,7 @@ namespace Main
 {
     public class Main : Node2D
     {
-
-        [Export(PropertyHint.ColorNoAlpha)]
-        private Color _defaultColor = Globals.ColorManager.CurrentColorPalette.DefaultColor;
-
-        [Export(PropertyHint.ColorNoAlpha)]
-        private Color _offColor = Globals.ColorManager.CurrentColorPalette.OffColor;
         private RealGrid _grid;
-        // private GameUI _gameUI;
         private ControlTemplate _settingsControl;
         private ControlTemplate _mainControl;
         private HelpControl _helpControl;
@@ -22,6 +15,7 @@ namespace Main
 
         private AudioManager _audioManager;
         private AudioStreamPlayer _mainAudioPlayer;
+        private AnimationPlayer _animationPlayer;
         private GameUI _gameUI;
 
         private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary { { "MusicOn", true }, { "SoundOn", true } };
@@ -31,7 +25,8 @@ namespace Main
 
             GetNode<ColorRect>("BackgroundLayer/ColorRect").Color = Globals.ColorManager.CurrentColorPalette.BackgroundColorMain;
             GetNode<TextureRect>("BackgroundLayer/TextureRect").Modulate = new Color(Globals.ColorManager.CurrentColorPalette.BackgroundColorSecondary, 0.5f);
-            
+
+            _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
             _gridControl = GetNode<Control>("GridLayer/MainControl/GridControl");
             _gameUI = GetNode<GameUI>("GridLayer/MainControl/GameUI");
             _settingsControl = GetNode<ControlTemplate>("GridLayer/SettingsControl");
@@ -43,33 +38,10 @@ namespace Main
 
             _highscoreLabel = _settingsControl.GetNode<Label>("HighscoreLabel");
             UpdateHighscore();
+
+            _gameUI.DisableButtonsState(true);
+
             InitSettings();
-
-
-            PackedScene gridScene = (PackedScene)ResourceLoader.Load("res://scene/RealGrid.tscn");
-            //_grid = Globals.PackedScenes.GridScene.Instance<Grid>();
-            _grid = gridScene.Instance<RealGrid>();
-
-            int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
-
-            // if (!OS.HasTouchscreenUiHint())
-            // {
-            //     sizeConstraint = (int)GetViewport().Size.x - 100;
-            // }
-
-            Vector2 cellRatio = new Vector2(1, 1);
-            Vector2 cellSize = new Vector2(64, 64);
-            Vector2 cellBorder = new Vector2(10, 10);
-            Vector2 gridSize = new Vector2(4, 6);
-
-            _grid.Init(true, gridSize, cellSize * cellRatio,cellBorder, sizeConstraint);
-            UpdateGridInfo();
-
-            _gridControl.AddChild(_grid);
-
-            RotateGrid();
-
-            _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint - 50);
         }
 
         private void InitSettings()
@@ -79,14 +51,8 @@ namespace Main
             _audioManager.SoundOn = (bool)_settingsDict["SoundOn"];
             _audioManager.MusicOn = (bool)_settingsDict["MusicOn"];
 
-            if ((bool)_settingsDict["MusicOn"])
-            {
-                _mainAudioPlayer.Play();
-            }
-
             _settingsControl.GetNode<TextureButton>("MusicRect/MusicOnButton").Pressed = !_audioManager.MusicOn;
             _settingsControl.GetNode<TextureButton>("SoundRect/SoundOnButton").Pressed = !_audioManager.SoundOn;
-
         }
 
         public void _on_GameUI_button_pressed(string buttonName)
@@ -162,15 +128,66 @@ namespace Main
                     break;
             }
         }
+        public void _on_TitleScreen_button_pressed(string buttonName)
+        {
+            switch (buttonName)
+            {
+                case "Play":
+                    _animationPlayer.Play("Play");
+                    break;
+            }
+        }
         public void _on_Grid_WinState(bool winning)
         {
             _gameUI.SetWinState(winning);
+        }
+
+        public void _on_AnimationPlayer_animation_finished(string animation)
+        {
+            if (animation == "Play")
+            {
+                _grid = Globals.PackedScenes.RealGridScene.Instance<RealGrid>();
+                InitGridAndHelpGrid();
+
+                if ((bool)_settingsDict["MusicOn"])
+                {
+                    _mainAudioPlayer.Play();
+                }
+
+                GetNode("GridLayer/TitleScreen").CallDeferred("queue_free");
+                _gameUI.DisableButtonsState(false);
+
+            }
         }
 
 
         public void RotateGrid()
         {
             _grid.Rotation = Mathf.Pi;
+        }
+        public void InitGridAndHelpGrid()
+        {
+            int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
+
+            if (OS.HasTouchscreenUiHint())
+            {
+                sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 100;
+            }
+
+            Vector2 cellRatio = new Vector2(1, 1);
+            Vector2 cellSize = new Vector2(64, 64);
+            Vector2 cellBorder = new Vector2(10, 10);
+            Vector2 gridSize = new Vector2(4, 6);
+
+            _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, sizeConstraint, true);
+            UpdateGridInfo();
+            
+            _grid.GridState = Globals.GRIDSTATE.TITLESCREEN;
+            _gridControl.AddChild(_grid);
+            
+            RotateGrid();
+            _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint - 50);
+            
         }
 
         private void UpdateGridInfo()
@@ -207,11 +224,6 @@ namespace Main
 
             controlOut.UpdateState();
             controlIn.UpdateState();
-        }
-
-        public void _on_ColorPicker_color_changed(Color color)
-        {
-            Globals.ColorManager.CurrentColorPalette.DefaultColor = color;
         }
 
 

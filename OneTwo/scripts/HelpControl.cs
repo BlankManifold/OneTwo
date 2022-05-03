@@ -46,8 +46,8 @@ namespace Main
         public void InstanceGrid(Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, Vector2 cellRatio, int sizeConstraint)
         {
 
-            //_grid = Globals.PackedScenes.FakeGridScene.Instance<FakeGrid>();
-            _grid = ((PackedScene)ResourceLoader.Load("res://scene/FakeGrid.tscn")).Instance<FakeGrid>();
+            _grid = Globals.PackedScenes.FakeGridScene.Instance<FakeGrid>();
+           // _grid = ((PackedScene)ResourceLoader.Load("res://scene/FakeGrid.tscn")).Instance<FakeGrid>();
 
             _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, sizeConstraint, false, Globals.ColorManager.ColorList4x6);
             _grid.Rotation = Mathf.Pi;

@@ -1,4 +1,3 @@
-using System;
 using Godot;
 
 namespace Main
@@ -55,6 +54,13 @@ namespace Main
             }
             
             _animationPlayer.Play("WinState");
+        }
+       
+        public void DisableButtonsState(bool disabled)
+        {
+                _settingsButton.Disabled = disabled;
+                _helpButton.Disabled = disabled;
+                _restartButton.Disabled = disabled;
         }
     }
 }

@@ -11,10 +11,10 @@ namespace Main
         private bool _someoneFlipped = false;
         private Vector2 _justPressedCoords = new Vector2(-1, -1);
         private Vector2 _selectedCoords = new Vector2(-1, -1);
-        private List<int> _indexAuxList;
+
         private List<int> _remaingColorsList = new List<int>() { };
         private Globals.GRIDSTATE _gridState = Globals.GRIDSTATE.IDLE;
-        public Globals.GRIDSTATE GridState { get { return _gridState; } }
+        public Globals.GRIDSTATE GridState { get { return _gridState; } set { _gridState = value; } }
         private int _moves;
 
         private Node _winLabel;
@@ -33,7 +33,7 @@ namespace Main
             _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
             _tween = GetNode<Tween>("GridTween");
             _blocksContainer = GetNode<Node2D>("Blocks");
-            _blockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
+            _blockScene = Globals.PackedScenes.BlockScene;//(PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
 
 
 
@@ -53,19 +53,14 @@ namespace Main
             if (_animateGeneration)
             {
                 GenerateBlocks();
+                SetwinLabel();
+                return;
             }
-
-
-
-
-            SetwinLabel();
-
-
 
         }
         public override void _UnhandledInput(InputEvent @event)
         {
-            if (_gridState == Globals.GRIDSTATE.GENERATING || _gridState == Globals.GRIDSTATE.WINNING)
+            if (_gridState == Globals.GRIDSTATE.GENERATING || _gridState == Globals.GRIDSTATE.WINNING || _gridState == Globals.GRIDSTATE.TITLESCREEN)
             {
                 @event.Dispose();
                 return;
@@ -354,7 +349,7 @@ namespace Main
                 }
             }
         }
-        private async void GenerateBlocks()
+        public void GenerateBlocks()
         {
             Globals.ColorManager.RandomizeColorList();
             CreateBlocks(false, true);
@@ -363,8 +358,6 @@ namespace Main
             TweenManager.GenerateBlocks(_tween, _blocks);
 
             _gridState = Globals.GRIDSTATE.GENERATING;
-            await ToSignal(GetTree().CreateTimer(1f), "timeout");
-
             TweenManager.Start(_tween);
         }
 

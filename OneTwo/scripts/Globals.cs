@@ -5,20 +5,20 @@ using Godot;
 
 namespace Globals
 {
-    // public static class PackedScenes
-    // {
-    //     public static PackedScene GridScene = (PackedScene)ResourceLoader.Load("res://scene/Grid.tscn");
-    //     public static PackedScene FakeGridScene = (PackedScene)ResourceLoader.Load("res://scene/FakeGrid.tscn");
-    //     public static PackedScene BlockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
+    public static class PackedScenes
+    {
+        public static PackedScene RealGridScene = (PackedScene)ResourceLoader.Load("res://scene/RealGrid.tscn");
+        public static PackedScene FakeGridScene = (PackedScene)ResourceLoader.Load("res://scene/FakeGrid.tscn");
+        public static PackedScene BlockScene = (PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
 
-    // }
+    }
     public enum BLOCKSTATE
     {
         IDLE, ANIMATING
     }
     public enum GRIDSTATE
     {
-        IDLE, ANIMATING, GENERATING, WINNING, WIN
+        IDLE, ANIMATING, GENERATING, WINNING, WIN, TITLESCREEN
     }
 
     public struct ColorPalette

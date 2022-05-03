@@ -1,0 +1,86 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/titleCover.png" type="Texture" id=1]
+[ext_resource path="res://assets/titleTitle.png" type="Texture" id=2]
+[ext_resource path="res://assets/Louis George Cafe Bold.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://scripts/ControlTemplate.cs" type="Script" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 50
+use_filter = true
+font_data = ExtResource( 3 )
+
+[node name="TitleScreen" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+_buttonGroupName = "TitleScreenButton"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -210.0
+margin_top = 24.0
+margin_right = 210.0
+margin_bottom = 357.0
+mouse_filter = 2
+texture = ExtResource( 2 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = -32.0
+margin_top = -531.0
+margin_right = 473.0
+margin_bottom = -26.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextureButton" type="TextureButton" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -180.0
+margin_right = 20.0
+margin_bottom = -140.0
+
+[node name="Play" type="TextureButton" parent="." groups=["TitleScreenButton"]]
+self_modulate = Color( 1, 1, 1, 0 )
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -82.5
+margin_top = 280.0
+margin_right = 82.5
+margin_bottom = 340.0
+
+[node name="PlayLabel" type="Label" parent="Play"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -61.0
+margin_top = -28.5
+margin_right = 61.0
+margin_bottom = 28.5
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "PLAY"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

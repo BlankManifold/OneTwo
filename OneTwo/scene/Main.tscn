@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://scripts/Main.cs" type="Script" id=1]
 [ext_resource path="res://scene/SettingsControl.tscn" type="PackedScene" id=2]
@@ -7,11 +7,65 @@
 [ext_resource path="res://assets/backGround.png" type="Texture" id=5]
 [ext_resource path="res://assets/the-long-ride-home-sky-toes-main-version-03-28-7946.mp3" type="AudioStream" id=6]
 [ext_resource path="res://scene/AudioManager.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scene/TitleScreen.tscn" type="PackedScene" id=8]
+
+[sub_resource type="Animation" id=1]
+resource_name = "Play"
+tracks/0/type = "value"
+tracks/0/path = NodePath("GridLayer/MainControl:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("GridLayer/TitleScreen:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("GridLayer/MainControl:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("GridLayer/TitleScreen:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
 
 [node name="Main" type="Node2D" groups=["Main"]]
 z_as_relative = false
 script = ExtResource( 1 )
-_defaultColor = Color( 1, 1, 1, 1 )
 
 [node name="MainTween" type="Tween" parent="."]
 
@@ -25,7 +79,10 @@ volume_db = -10.0
 
 [node name="GridLayer" type="CanvasLayer" parent="."]
 
+[node name="TitleScreen" parent="GridLayer" instance=ExtResource( 8 )]
+
 [node name="MainControl" parent="GridLayer" instance=ExtResource( 3 )]
+modulate = Color( 1, 1, 1, 0 )
 
 [node name="SettingsControl" parent="GridLayer" instance=ExtResource( 2 )]
 anchor_left = -1.148
@@ -64,3 +121,9 @@ stretch_mode = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Play = SubResource( 1 )
+anims/RESET = SubResource( 2 )
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
