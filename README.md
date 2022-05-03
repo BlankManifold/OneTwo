@@ -7,7 +7,7 @@
 My first game jam ever!
 A simple puzzle game made for [Newbies Game Jam (2022 - 1)](https://itch.io/jam/newbies), minimalism was the required theme!
 
-OneTwo is now published at ...
+OneTwo is now published (and obviously free to play) at [OneTwo in itch.io](https://neurodivergentgames.itch.io/onetwo)!
 
 ## Objective
 
@@ -122,3 +122,10 @@ Time is ticking! Only 1.5 days left... Clean, elegant, general and reusable code
 * Selected a font
 * Fixed problem with moves counter and moves label
 * Created a background pattern 
+
+
+### 03/05/22
+
+* Fixed a lot of small bugs: highscore label, grid size, `PackedScene` loading and some cleaning
+* Added a `TitleScreen`
+* Published and free to play on itch.io: HTML5 version and APK file for Android version  
