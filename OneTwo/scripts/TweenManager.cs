@@ -85,7 +85,7 @@ namespace Main
             if (block2.CellCoords[1] != 0)
                 tween.InterpolateProperty(block2, "modulate", block2.Color, Globals.ColorManager.CurrentColorPalette.OffColor, modulateTime, Tween.TransitionType.Linear, delay: delay + flashScaleTime - overlappingTime);
 
-            tween.InterpolateCallback(grid.AudioManager,  delay, "PlayAudioEffect", grid.GetAudioStream("SwitchOff"), grid._soundSwitchOffDB);
+            tween.InterpolateCallback(grid.AudioManager, delay, "PlayAudioEffect", grid.GetAudioStream("SwitchOff"), grid._soundSwitchOffDB);
 
 
             if (toBeRepeated)
@@ -122,8 +122,6 @@ namespace Main
                 {
                     tween.InterpolateProperty(fromBlock, "scale", fromBlock.Scale, fromBlock.Scale * scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay);
                     tween.InterpolateProperty(fromBlock, "scale", fromBlock.Scale * scaleFactor, fromBlock.Scale, scaleTime, Tween.TransitionType.Sine, delay: delay + scaleTime + swapTime);
-                    if (!toBeRepeated)
-                        tween.InterpolateCallback(fromBlock, 2 * scaleTime + swapTime, "set", "z_index", 0);
                 }
 
                 if (!toBlock.IsOff)
@@ -134,25 +132,31 @@ namespace Main
                     }
                     tween.InterpolateProperty(toBlock, "scale", toBlock.Scale, toBlock.Scale / scaleFactor, scaleTime, Tween.TransitionType.Sine, delay: delay);
                     tween.InterpolateProperty(toBlock, "scale", toBlock.Scale / scaleFactor, toBlock.Scale, scaleTime, Tween.TransitionType.Sine, delay: delay + scaleTime + swapTime);
-                    if (!toBeRepeated)
-                        tween.InterpolateCallback(toBlock, 2 * scaleTime + swapTime, "set", "z_index", 0);
                 }
+            }
+
+            if (!toBeRepeated)
+            {
+                if (!fromBlock.IsOff)
+                    tween.InterpolateCallback(fromBlock, 2 * scaleTime + swapTime + delay, "set", "z_index", 0);
+                if (!toBlock.IsOff)
+                    tween.InterpolateCallback(toBlock, 2 * scaleTime + swapTime + delay, "set", "z_index", 0);
             }
 
             tween.InterpolateProperty(fromBlock, "position", fromPos, toPos, swapTime, Tween.TransitionType.Sine, delay: delay + scaleTime);
             tween.InterpolateProperty(toBlock, "position", toPos, fromPos, swapTime, Tween.TransitionType.Sine, delay: delay + scaleTime);
 
-            tween.InterpolateCallback(grid.AudioManager,  delay + 0.2f, "PlayAudioEffect", grid.GetAudioStream("Swap"), grid._soundSwapDB);
+            tween.InterpolateCallback(grid.AudioManager, delay + 0.2f, "PlayAudioEffect", grid.GetAudioStream("Swap"), grid._soundSwapDB);
 
             return delay + 2 * scaleTime + swapTime;
         }
 
         public static float GenerateBlocks(Tween tween, Godot.Collections.Array<Block> blocks)
         {
- 
-           
+
+
             blocks = new Godot.Collections.Array<Block>(blocks.OrderBy(item => Globals.RandomManager.rnd.Next()).ToArray<Block>());
-           // blocks.Shuffle();
+            // blocks.Shuffle();
             float scaleTime = 0.2f;
             float modulateTime = 0.2f;
             float delayEach = 0.1f;
@@ -160,8 +164,8 @@ namespace Main
 
             float totalTime = 0.0f;
             Color color;
-            
- 
+
+
 
             foreach (Block block in blocks)
             {
@@ -185,7 +189,7 @@ namespace Main
                 delayNext += delayEach;
                 totalTime += delayEach + scaleTime;
             }
- 
+
             return totalTime;
         }
 
@@ -197,22 +201,22 @@ namespace Main
             float delayEach = 0.1f;
 
             List<Block> blocks = grid.GetRow(3);
-            List<Color> colors = Globals.ColorManager.GetRandomizeColorList(); 
+            List<Color> colors = Globals.ColorManager.GetRandomizeColorList();
             Godot.Collections.Array<Label> winLabels = new Godot.Collections.Array<Label>(grid.WinLabel.GetChildren());
 
-            float scaleTotalTime =  blocks.Count*delayEach + scaleTime;
+            float scaleTotalTime = blocks.Count * delayEach + scaleTime;
             float totalTime = delay + scaleTotalTime;
             float currentDelay;
             for (int i = 0; i < blocks.Count; i++)
             {
-                currentDelay = (blocks.Count-i-1)*delayEach;
+                currentDelay = (blocks.Count - i - 1) * delayEach;
                 Block block = blocks[i];
-                tween.InterpolateProperty(block, "scale", block.Scale, block.OriginalScale, scaleTime, Tween.TransitionType.Sine, delay: delay + currentDelay );
+                tween.InterpolateProperty(block, "scale", block.Scale, block.OriginalScale, scaleTime, Tween.TransitionType.Sine, delay: delay + currentDelay);
                 tween.InterpolateProperty(block, "modulate", Globals.ColorManager.CurrentColorPalette.OffColor, colors[i], modulateTime, Tween.TransitionType.Sine, delay: currentDelay + delay);
-                tween.InterpolateCallback(winLabels[blocks.Count-i-1], currentDelay + delay + modulateTime, "set", "visible", true);
+                tween.InterpolateCallback(winLabels[blocks.Count - i - 1], currentDelay + delay + modulateTime, "set", "visible", true);
             }
 
-             tween.InterpolateCallback(grid.AudioManager, scaleTotalTime +  delay - delayEach - modulateTime, "PlayAudioEffect", grid.GetAudioStream("Win"), grid._soundWinDB);
+            tween.InterpolateCallback(grid.AudioManager, scaleTotalTime + delay - delayEach - modulateTime, "PlayAudioEffect", grid.GetAudioStream("Win"), grid._soundWinDB);
 
             return totalTime;
         }
@@ -332,7 +336,7 @@ namespace Main
         }
         public static float Help4x6Tip2(FakeGrid grid, Tween tween, float delay = 0.0f, bool toBeRepeateded = true)
         {
-           
+
             float totalTime = 0.0f;
             float selectDelay = 0.5f;
             float secondSelectDelay = 1.0f;

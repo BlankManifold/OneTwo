@@ -46,21 +46,14 @@ namespace Main
 
         public void SetWinState(bool winning)
         {
-            if (winning)
-            {
-                _settingsButton.Disabled = true;
-                _helpButton.Disabled = true;
-                return;
-            }
+            _settingsButton.Disabled = winning;
+            _helpButton.Disabled = winning;
             
-            _animationPlayer.Play("WinState");
+            if (!winning)
+            {
+                _animationPlayer.Play("WinState");
+            }
         }
-       
-        public void DisableButtonsState(bool disabled)
-        {
-                _settingsButton.Disabled = disabled;
-                _helpButton.Disabled = disabled;
-                _restartButton.Disabled = disabled;
-        }
+
     }
 }

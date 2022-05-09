@@ -17,8 +17,8 @@ namespace Main
         public Globals.GRIDSTATE GridState { get { return _gridState; } set { _gridState = value; } }
         private int _moves;
 
-        private Node _winLabel;
-        public Node WinLabel { get { return _winLabel; } }
+        private Node2D _winLabel;
+        public Node2D WinLabel { get { return _winLabel; } }
 
         [Signal]
         delegate void UpdateMoves(int moves);
@@ -29,7 +29,7 @@ namespace Main
         public override void _Ready()
         {
 
-            _winLabel = GetParent().GetNode<Node>("WinLabel");
+            _winLabel = GetParent().GetNode<Node2D>("WinLabel");
             _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
             _tween = GetNode<Tween>("GridTween");
             _blocksContainer = GetNode<Node2D>("Blocks");

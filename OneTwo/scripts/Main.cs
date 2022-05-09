@@ -5,8 +5,8 @@ namespace Main
     public class Main : Node2D
     {
         private RealGrid _grid;
-        private ControlTemplate _settingsControl;
-        private ControlTemplate _mainControl;
+        private SettingsControl _settingsControl;
+        private MainControl _mainControl;
         private HelpControl _helpControl;
         private Control _gridControl;
         private Tween _tween;
@@ -29,8 +29,8 @@ namespace Main
             _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
             _gridControl = GetNode<Control>("GridLayer/MainControl/GridControl");
             _gameUI = GetNode<GameUI>("GridLayer/MainControl/GameUI");
-            _settingsControl = GetNode<ControlTemplate>("GridLayer/SettingsControl");
-            _mainControl = GetNode<ControlTemplate>("GridLayer/MainControl");
+            _settingsControl = GetNode<SettingsControl>("GridLayer/SettingsControl");
+            _mainControl = GetNode<MainControl>("GridLayer/MainControl");
             _helpControl = GetNode<HelpControl>("GridLayer/HelpControl");
             _tween = GetNode<Tween>("MainTween");
             _audioManager = GetNode<AudioManager>("AudioManager");
@@ -217,6 +217,9 @@ namespace Main
 
             controlOut.Visible = true;
             controlIn.Visible = true;
+
+            controlOut.DisableButtonsState(true);
+            controlIn.DisableButtonsState(true);
 
             TweenManager.Start(_tween);
 

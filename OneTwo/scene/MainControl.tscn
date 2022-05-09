@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://scripts/ControlTemplate.cs" type="Script" id=1]
+[ext_resource path="res://scripts/MainControl.cs" type="Script" id=1]
 [ext_resource path="res://scene/GameUI.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scene/WinLabel.tscn" type="PackedScene" id=3]
 

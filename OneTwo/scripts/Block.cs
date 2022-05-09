@@ -101,26 +101,21 @@ namespace Main
             CellCoords = toBlock.CellCoords;
             toBlock.CellCoords = fromCoords;
 
-            if (!tobeScaled)
-            {
-                return false;
-            }
-
             if (IsOff)
             {
                 toBlock.ZIndex = 1;
-                return true;
             }
-
-            if (toBlock.IsOff)
+            else if (toBlock.IsOff)
             {
                 ZIndex = 1;
-                return true;
+            }
+            else
+            {
+                ZIndex = 1;
+                toBlock.ZIndex = -1;
             }
 
-            ZIndex = 1;
-            toBlock.ZIndex = -1;
-            return true;
+            return tobeScaled;
 
 
         }

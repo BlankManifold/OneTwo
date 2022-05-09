@@ -7,7 +7,7 @@ size = 50
 use_filter = true
 font_data = ExtResource( 1 )
 
-[node name="WinLabel" type="Node"]
+[node name="WinLabel" type="Node2D"]
 
 [node name="W" type="Label" parent="."]
 visible = false
