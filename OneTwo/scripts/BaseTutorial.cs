@@ -30,16 +30,16 @@ namespace Main
         // 5. the remaining block must be vertically aligned to be matched
 
         [Export(PropertyHint.MultilineText)]
-        protected string _helpTip0 = "";
+        protected string _helpTip0 = "1. select two adjacent blocks to find matching colors";
         [Export(PropertyHint.MultilineText)]
-        protected string _helpTip1 = "";
+        protected string _helpTip1 = "2. click and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move";
         [Export(PropertyHint.MultilineText)]
-        protected string _helpTip2 = "";
+        protected string _helpTip2 = "3. active blocks can also be swapped with deactivated ones";
         [Export(PropertyHint.MultilineText)]
-        protected string _helpTip3 = "";
+        protected string _helpTip3 = "4. after pairing all blocks of one color, you can match the remaining one with the colorful block";
 
         [Export(PropertyHint.MultilineText)]
-        protected string _helpTip4 = "";
+        protected string _helpTip4 = "5. the remaining block must be vertically aligned to be matched";
 
 
         public override void _Ready()

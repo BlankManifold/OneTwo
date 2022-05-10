@@ -146,7 +146,15 @@ namespace Main
             switch (buttonName)
             {
                 case "Play":
-                    if (!SaveManager.AlreadyPlayed())
+
+                    if ((bool)_settingsDict["MusicOn"])
+                    {
+                        _tween.InterpolateProperty(_mainAudioPlayer, "volume_db", -40, -10, 4);
+                        _tween.Start();
+                        _mainAudioPlayer.Play();
+                    }
+
+                    if (SaveManager.AlreadyPlayed())
                     {
                         int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
                         Vector2 cellRatio = new Vector2(1, 1);
@@ -154,16 +162,18 @@ namespace Main
                         Vector2 cellBorder = new Vector2(10, 10);
                         Vector2 gridSize = new Vector2(4, 6);
 
-                        _tutorialControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint - 50);
+                        _tutorialControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint);
                         _tutorialControl.DisableButtonsState(false);
                         _tutorialControl.StartHelpTween();
 
                         _animationPlayer.Play("PlayTutorial");
+
                         _settingsDict["Played"] = true;
                         SaveManager.SaveSettings(_settingsDict);
-                        
-                        break;     
+
+                        break;
                     }
+
                     _animationPlayer.Play("Play");
                     break;
 
@@ -182,11 +192,6 @@ namespace Main
 
                 _grid = Globals.PackedScenes.RealGridScene.Instance<RealGrid>();
                 InitGridAndHelpGrid();
-
-                if ((bool)_settingsDict["MusicOn"])
-                {
-                    _mainAudioPlayer.Play();
-                }
 
                 if (animation == "Play")
                 {

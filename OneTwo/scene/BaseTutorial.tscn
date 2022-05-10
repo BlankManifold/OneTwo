@@ -71,9 +71,7 @@ __meta__ = {
 }
 _helpTip0 = " 1. select two adjacent blocks to find matching colors"
 _helpTip1 = " 2. press and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move "
-_helpTip2 = "3. active blocks can also be swapped with deactivated ones"
 _helpTip3 = "4. after pairing all blocks of one color, you can match the remaining one with the bottom block"
-_helpTip4 = "5. the remaining block must be vertically aligned to be matched"
 
 [node name="NextButton" type="TextureButton" parent="."]
 self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
