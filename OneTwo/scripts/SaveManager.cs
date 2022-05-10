@@ -38,7 +38,7 @@ namespace Main
             Error err = file.Open("user://settings.data", File.ModeFlags.Read);
             if (err != 0)
             {
-                return new Godot.Collections.Dictionary() { { "MusicOn", true }, { "SoundOn", true } };
+                return new Godot.Collections.Dictionary() { { "MusicOn", true }, { "SoundOn", true }, { "Played", false} };
             }
 
             Godot.Collections.Dictionary settingsDict = (Godot.Collections.Dictionary)file.GetVar();
@@ -46,6 +46,22 @@ namespace Main
             file.Close();
 
             return settingsDict;
+        }
+       
+        public static bool AlreadyPlayed()
+        {
+            File file = new File();
+            Error err = file.Open("user://settings.data", File.ModeFlags.Read);
+            if (err != 0)
+            {
+                return false;
+            }
+
+            Godot.Collections.Dictionary settingsDict = (Godot.Collections.Dictionary)file.GetVar();
+
+            file.Close();
+
+            return (bool)settingsDict["Played"];
         }
         public static void SaveSettings(Godot.Collections.Dictionary settingsDict)
         {

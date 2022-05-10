@@ -61,7 +61,7 @@ namespace Main
         public PackedScene BlockScene { get { return _blockScene; }}
         protected Node2D _blocksContainer;
         protected Block[,] _blocksMatrix;
-        protected Godot.Collections.Array<Block> _blocks;
+        protected List<Block> _blocks = new List<Block>(){};
         protected Tween _tween;
         public Tween Tween { get { return _tween; } }
 
@@ -322,6 +322,7 @@ namespace Main
                     int colorId = PickColorId(col, row, _colorsAuxList);
 
                     block.Init(new Vector2(col, row), this, colorId, rndColor);
+                    _blocks.Add(block);
                     _blocksContainer.AddChild(block);
                     _blocksMatrix[row, col] = block;
 

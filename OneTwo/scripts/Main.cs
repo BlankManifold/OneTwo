@@ -7,7 +7,8 @@ namespace Main
         private RealGrid _grid;
         private SettingsControl _settingsControl;
         private MainControl _mainControl;
-        private HelpControl _helpControl;
+        private BaseTutorial _helpControl;
+        private BaseTutorial _tutorialControl;
         private Control _gridControl;
         private Tween _tween;
         private int _highscore = -1;
@@ -18,7 +19,7 @@ namespace Main
         private AnimationPlayer _animationPlayer;
         private GameUI _gameUI;
 
-        private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary { { "MusicOn", true }, { "SoundOn", true } };
+        private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary { { "MusicOn", true }, { "SoundOn", true }, { "Played", false } };
 
         public override void _Ready()
         {
@@ -31,7 +32,8 @@ namespace Main
             _gameUI = GetNode<GameUI>("GridLayer/MainControl/GameUI");
             _settingsControl = GetNode<SettingsControl>("GridLayer/SettingsControl");
             _mainControl = GetNode<MainControl>("GridLayer/MainControl");
-            _helpControl = GetNode<HelpControl>("GridLayer/HelpControl");
+            _helpControl = GetNode<BaseTutorial>("GridLayer/HelpControl");
+            _tutorialControl = GetNode<BaseTutorial>("GridLayer/TutorialControl");
             _tween = GetNode<Tween>("MainTween");
             _audioManager = GetNode<AudioManager>("AudioManager");
             _mainAudioPlayer = _audioManager.GetNode<AudioStreamPlayer>("MainAudioPlayer");
@@ -40,6 +42,7 @@ namespace Main
             UpdateHighscore();
 
             _gameUI.DisableButtonsState(true);
+            _tutorialControl.DisableButtonsState(true);
 
             InitSettings();
         }
@@ -128,13 +131,42 @@ namespace Main
                     break;
             }
         }
+        public void _on_TutorialControl_button_pressed(string buttonName)
+        {
+            switch (buttonName)
+            {
+                case "SkipButton":
+                    _tutorialControl.StopHelp();
+                    _animationPlayer.Play("PlayFromTutorial");
+                    break;
+            }
+        }
         public void _on_TitleScreen_button_pressed(string buttonName)
         {
             switch (buttonName)
             {
                 case "Play":
+                    if (!SaveManager.AlreadyPlayed())
+                    {
+                        int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
+                        Vector2 cellRatio = new Vector2(1, 1);
+                        Vector2 cellSize = new Vector2(64, 64);
+                        Vector2 cellBorder = new Vector2(10, 10);
+                        Vector2 gridSize = new Vector2(4, 6);
+
+                        _tutorialControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint - 50);
+                        _tutorialControl.DisableButtonsState(false);
+                        _tutorialControl.StartHelpTween();
+
+                        _animationPlayer.Play("PlayTutorial");
+                        _settingsDict["Played"] = true;
+                        SaveManager.SaveSettings(_settingsDict);
+                        
+                        break;     
+                    }
                     _animationPlayer.Play("Play");
                     break;
+
             }
         }
         public void _on_Grid_WinState(bool winning)
@@ -144,8 +176,10 @@ namespace Main
 
         public void _on_AnimationPlayer_animation_finished(string animation)
         {
-            if (animation == "Play")
+            if (animation == "Play" || animation == "PlayFromTutorial")
             {
+                _gameUI.DisableButtonsState(false);
+
                 _grid = Globals.PackedScenes.RealGridScene.Instance<RealGrid>();
                 InitGridAndHelpGrid();
 
@@ -154,9 +188,21 @@ namespace Main
                     _mainAudioPlayer.Play();
                 }
 
-                GetNode("GridLayer/TitleScreen").CallDeferred("queue_free");
-                _gameUI.DisableButtonsState(false);
+                if (animation == "Play")
+                {
+                    GetNode("GridLayer/TitleScreen").CallDeferred("queue_free");
+                    return;
+                }
+                if (animation == "PlayFromTutorial")
+                {
+                    _tutorialControl.CallDeferred("queue_free");
+                    return;
+                }
+            }
 
+            if (animation == "PlayTutorial")
+            {
+                GetNode("GridLayer/TitleScreen").CallDeferred("queue_free");
             }
         }
 
@@ -181,13 +227,12 @@ namespace Main
 
             _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, sizeConstraint, true);
             UpdateGridInfo();
-            
+
             _grid.GridState = Globals.GRIDSTATE.TITLESCREEN;
             _gridControl.AddChild(_grid);
-            
+
             RotateGrid();
             _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint - 50);
-            
         }
 
         private void UpdateGridInfo()

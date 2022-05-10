@@ -151,11 +151,11 @@ namespace Main
             return delay + 2 * scaleTime + swapTime;
         }
 
-        public static float GenerateBlocks(Tween tween, Godot.Collections.Array<Block> blocks)
+        public static float GenerateBlocks(Tween tween, List<Block> blocks)
         {
 
 
-            blocks = new Godot.Collections.Array<Block>(blocks.OrderBy(item => Globals.RandomManager.rnd.Next()).ToArray<Block>());
+            blocks = blocks.OrderBy(item => Globals.RandomManager.rnd.Next()).ToList<Block>();
             // blocks.Shuffle();
             float scaleTime = 0.2f;
             float modulateTime = 0.2f;

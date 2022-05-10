@@ -1,0 +1,151 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scripts/BaseTutorial.cs" type="Script" id=1]
+[ext_resource path="res://assets/Help.tres" type="DynamicFont" id=3]
+[ext_resource path="res://assets/arrow.png" type="Texture" id=4]
+
+[sub_resource type="Animation" id=1]
+resource_name = "HelpButtonModulate"
+length = 3.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("NextButton:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1.5, 2.9 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ), Color( 0.643137, 0.596078, 0.47451, 1 ), Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("PreviousButton:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 1.5, 2.9 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ), Color( 0.643137, 0.596078, 0.47451, 1 ), Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("NextButton:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("PreviousButton:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+
+[node name="BaseTutorial" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false,
+"_edit_vertical_guides_": [ 270.0 ]
+}
+_helpTip0 = " 1. select two adjacent blocks to find matching colors"
+_helpTip1 = " 2. press and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move "
+_helpTip2 = "3. active blocks can also be swapped with deactivated ones"
+_helpTip3 = "4. after pairing all blocks of one color, you can match the remaining one with the bottom block"
+_helpTip4 = "5. the remaining block must be vertically aligned to be matched"
+
+[node name="NextButton" type="TextureButton" parent="."]
+self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 202.0
+margin_top = -219.0
+margin_right = 452.0
+margin_bottom = -31.0
+rect_scale = Vector2( 0.3, 0.4 )
+texture_normal = ExtResource( 4 )
+expand = true
+stretch_mode = 3
+flip_h = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PreviousButton" type="TextureButton" parent="."]
+self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -276.0
+margin_top = -219.0
+margin_right = -26.0
+margin_bottom = -31.0
+rect_scale = Vector2( 0.3, 0.4 )
+texture_normal = ExtResource( 4 )
+expand = true
+stretch_mode = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HelpLabel" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -218.0
+margin_top = -231.0
+margin_right = 218.0
+margin_bottom = -128.0
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
+custom_fonts/font = ExtResource( 3 )
+text = "1. select and match color of adjoint blocks to deactivate it "
+align = 1
+valign = 1
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridControl" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_top = -88.0
+margin_bottom = -88.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/HelpButtonModulate = SubResource( 1 )
+anims/RESET = SubResource( 2 )
+
+[connection signal="pressed" from="NextButton" to="." method="_on_NextButton_pressed"]
+[connection signal="pressed" from="PreviousButton" to="." method="_on_PreviousButton_pressed"]

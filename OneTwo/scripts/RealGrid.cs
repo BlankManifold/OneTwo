@@ -354,7 +354,6 @@ namespace Main
             Globals.ColorManager.RandomizeColorList();
             CreateBlocks(false, true);
 
-            _blocks = new Godot.Collections.Array<Block>(GetTree().GetNodesInGroup("Block"));
             TweenManager.GenerateBlocks(_tween, _blocks);
 
             _gridState = Globals.GRIDSTATE.GENERATING;

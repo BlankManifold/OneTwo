@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://scripts/Main.cs" type="Script" id=1]
 [ext_resource path="res://scene/SettingsControl.tscn" type="PackedScene" id=2]
@@ -8,11 +8,66 @@
 [ext_resource path="res://assets/the-long-ride-home-sky-toes-main-version-03-28-7946.mp3" type="AudioStream" id=6]
 [ext_resource path="res://scene/AudioManager.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scene/TitleScreen.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scene/TutorialControl.tscn" type="PackedScene" id=9]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Play"
 tracks/0/type = "value"
 tracks/0/path = NodePath("GridLayer/MainControl:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("GridLayer/TitleScreen:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "PlayFromTutorial"
+tracks/0/type = "value"
+tracks/0/path = NodePath("GridLayer/MainControl:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("GridLayer/TutorialControl:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "PlayTutorial"
+tracks/0/type = "value"
+tracks/0/path = NodePath("GridLayer/TutorialControl:modulate")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -90,11 +145,17 @@ anchor_right = -0.148
 margin_left = -0.0800171
 margin_right = -0.0800018
 
+[node name="TutorialControl" parent="GridLayer" instance=ExtResource( 9 )]
+modulate = Color( 1, 1, 1, 0 )
+
 [node name="HelpControl" parent="GridLayer" instance=ExtResource( 4 )]
-anchor_left = 1.148
-anchor_right = 2.148
-margin_left = -0.919983
-margin_right = -0.920044
+anchor_left = 1.139
+anchor_right = 2.139
+margin_left = -0.0600586
+margin_top = 0.0
+margin_right = -0.0600586
+margin_bottom = 0.0
+_buttonGroupName = "HelpButton"
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="."]
 layer = -2
@@ -124,6 +185,8 @@ __meta__ = {
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Play = SubResource( 1 )
+anims/PlayFromTutorial = SubResource( 4 )
+anims/PlayTutorial = SubResource( 3 )
 anims/RESET = SubResource( 2 )
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

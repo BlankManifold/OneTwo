@@ -1,0 +1,76 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scene/BaseTutorial.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/Louis George Cafe Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://assets/Moves.tres" type="DynamicFont" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 50
+use_filter = true
+font_data = ExtResource( 2 )
+
+[node name="TutorialControl" instance=ExtResource( 1 )]
+_buttonGroupName = "TutorialButton"
+
+[node name="NextButton" parent="." index="0"]
+margin_top = -203.0
+margin_bottom = -15.0
+
+[node name="PreviousButton" parent="." index="1"]
+margin_top = -203.0
+margin_bottom = -15.0
+
+[node name="HelpLabel" parent="." index="2"]
+margin_top = -215.0
+margin_bottom = -112.0
+
+[node name="SkipButton" type="TextureButton" parent="." index="5" groups=["TutorialButton"]]
+self_modulate = Color( 1, 1, 1, 0 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -82.5
+margin_top = -100.0
+margin_right = 82.5
+margin_bottom = -40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SkipLabel" type="Label" parent="SkipButton" index="0"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -61.0
+margin_top = -28.5
+margin_right = 61.0
+margin_bottom = 28.5
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "SKIP"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TutorialLabel" type="Label" parent="." index="6"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -148.0
+margin_top = 48.0
+margin_right = 148.0
+margin_bottom = 126.0
+custom_colors/font_color = Color( 0.760784, 0.729412, 0.65098, 1 )
+custom_constants/shadow_offset_x = 0
+custom_constants/line_spacing = 0
+custom_constants/shadow_as_outline = 0
+custom_fonts/font = ExtResource( 3 )
+text = "TUTORIAL"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
