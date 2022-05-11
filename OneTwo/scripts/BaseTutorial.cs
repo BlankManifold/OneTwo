@@ -76,24 +76,24 @@ namespace Main
             {
                 case 0:
                     totalTime = TweenManager.Help4x6Tip0(_grid, _tween, delay);
-                    _tween.InterpolateCallback(_grid, totalTime - 0.5f, "Reset", true, false);
+                    _tween.InterpolateCallback(_grid, totalTime - 0.3f, "Reset", true, false);
                     _label.Text = _helpTip0;
                     break;
                 case 1:
                     totalTime = TweenManager.Help4x6Tip1(_grid, _tween, delay);
-                    _tween.InterpolateCallback(_grid, totalTime - 0.5f, "Reset", true, false);
+                    _tween.InterpolateCallback(_grid, totalTime - 0.3f, "Reset", true, false);
                     _label.Text = _helpTip1;
                     break;
                 case 2:
                     _grid.ResetOff(_resetOffArray, true, false);
                     totalTime = TweenManager.Help4x6Tip2(_grid, _tween, delay);
-                    _tween.InterpolateCallback(_grid, totalTime - 0.5f, "ResetOff", _resetOffArray, true, false);
+                    _tween.InterpolateCallback(_grid, totalTime - 0.3f, "ResetOff", _resetOffArray, true, false);
                     _label.Text = _helpTip2;
                     break;
                 case 3:
                     _grid.ResetOff(_resetOffArray, true, false);
                     totalTime = TweenManager.Help4x6Tip3(_grid, _tween, delay);
-                    _tween.InterpolateCallback(_grid, totalTime - 0.5f, "ResetOff", _resetOffArray, true, false);
+                    _tween.InterpolateCallback(_grid, totalTime - 0.3f, "ResetOff", _resetOffArray, true, false);
                     _label.Text = _helpTip3;
                     break;
                 case 4:
@@ -103,9 +103,9 @@ namespace Main
             _tween.Start();
         }
 
-        public void StartHelpTween()
+        public void StartHelpTween(float delay = 1.0f)
         {
-            _helpTweenFunction(1f);
+            _helpTweenFunction(delay);
             _animationPlayer.Play("HelpButtonModulate");
         }
         public void StopHelpTween()

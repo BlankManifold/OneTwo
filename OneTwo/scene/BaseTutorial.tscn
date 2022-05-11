@@ -69,8 +69,7 @@ __meta__ = {
 "_edit_use_anchors_": false,
 "_edit_vertical_guides_": [ 270.0 ]
 }
-_helpTip0 = " 1. select two adjacent blocks to find matching colors"
-_helpTip1 = " 2. press and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move "
+_helpTip1 = "2. press and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move"
 _helpTip3 = "4. after pairing all blocks of one color, you can match the remaining one with the bottom block"
 
 [node name="NextButton" type="TextureButton" parent="."]
@@ -121,7 +120,7 @@ margin_right = 218.0
 margin_bottom = -128.0
 custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
 custom_fonts/font = ExtResource( 3 )
-text = "1. select and match color of adjoint blocks to deactivate it "
+text = "1. select two adjacent blocks to find matching colors"
 align = 1
 valign = 1
 autowrap = true

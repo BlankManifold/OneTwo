@@ -21,6 +21,10 @@ namespace Main
 
         private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary { { "MusicOn", true }, { "SoundOn", true }, { "Played", false } };
 
+
+        [Signal]
+        delegate void PlayTutorial();
+
         public override void _Ready()
         {
 
@@ -141,7 +145,7 @@ namespace Main
                     break;
             }
         }
-        public void _on_TitleScreen_button_pressed(string buttonName)
+        public async void _on_TitleScreen_button_pressed(string buttonName)
         {
             switch (buttonName)
             {
@@ -154,7 +158,7 @@ namespace Main
                         _mainAudioPlayer.Play();
                     }
 
-                    if (SaveManager.AlreadyPlayed())
+                    if (!SaveManager.AlreadyPlayed())
                     {
                         int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
                         Vector2 cellRatio = new Vector2(1, 1);
@@ -162,15 +166,17 @@ namespace Main
                         Vector2 cellBorder = new Vector2(10, 10);
                         Vector2 gridSize = new Vector2(4, 6);
 
-                        _tutorialControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint);
-                        _tutorialControl.DisableButtonsState(false);
-                        _tutorialControl.StartHelpTween();
-
-                        _animationPlayer.Play("PlayTutorial");
-
                         _settingsDict["Played"] = true;
                         SaveManager.SaveSettings(_settingsDict);
 
+                        _tutorialControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint -50);
+                        _tutorialControl.DisableButtonsState(false);
+
+                        _animationPlayer.Play("PlayTutorial");
+                        await ToSignal(this, nameof(PlayTutorial));
+                        
+                        _tutorialControl.StartHelpTween(0f);
+                    
                         break;
                     }
 
@@ -207,6 +213,7 @@ namespace Main
 
             if (animation == "PlayTutorial")
             {
+                EmitSignal(nameof(PlayTutorial));
                 GetNode("GridLayer/TitleScreen").CallDeferred("queue_free");
             }
         }

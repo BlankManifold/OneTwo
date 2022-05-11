@@ -185,7 +185,7 @@ namespace Globals
         public static Vector2 CellBorder;
         public static Vector2 GridSize;
         public static Vector2 GridOffset;
-        public static float DiagFactor;
+        public static float DiagFactor  = Mathf.Sqrt2;
 
         public static void UpdateGridInfo(Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, Vector2 gridOffset)
         {

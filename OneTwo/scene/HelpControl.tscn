@@ -6,6 +6,7 @@
 [node name="HelpControl" instance=ExtResource( 1 )]
 margin_top = 1.0
 margin_bottom = 1.0
+_helpTip1 = "2. press and drag to swap two adjacent blocks. Swapping after selecting costs an extra move"
 
 [node name="BackButton" parent="." index="5" groups=["HelpButton"] instance=ExtResource( 5 )]
 margin_left = -96.0

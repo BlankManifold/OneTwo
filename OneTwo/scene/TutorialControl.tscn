@@ -1,9 +1,78 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scene/BaseTutorial.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/Louis George Cafe Bold.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://assets/Moves.tres" type="DynamicFont" id=3]
 [ext_resource path="res://scripts/TutorialControl.cs" type="Script" id=4]
+[ext_resource path="res://assets/block.png" type="Texture" id=5]
+
+[sub_resource type="Animation" id=2]
+resource_name = "HelpButtonModulate"
+length = 3.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("NextButton:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1.5, 2.9 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ), Color( 0.643137, 0.596078, 0.47451, 1 ), Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("PreviousButton:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 1.5, 2.9 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ), Color( 0.643137, 0.596078, 0.47451, 1 ), Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("NextButton:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("PreviousButton:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 0.945098, 0.937255, 0.894118, 1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("SkipButton/SkipLabel:custom_colors/font_color")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 0.643137, 0.596078, 0.47451, 1 ) ]
+}
 
 [sub_resource type="Animation" id=4]
 resource_name = "SkipButtonAppears"
@@ -20,7 +89,7 @@ tracks/0/keys = {
 "values": [ Color( 0.945098, 0.937255, 0.894118, 0 ), Color( 0.945098, 0.937255, 0.894118, 1 ) ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=5]
 resource_name = "SkipButtonDissolve"
 tracks/0/type = "value"
 tracks/0/path = NodePath("SkipButton/SkipLabel:custom_colors/font_color")
@@ -32,10 +101,10 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.9 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Color( 0.760784, 0.729412, 0.65098, 1 ), Color( 0.945098, 0.937255, 0.894118, 0 ) ]
+"values": [ Color( 0.643137, 0.596078, 0.47451, 1 ), Color( 0.945098, 0.937255, 0.894118, 0 ) ]
 }
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id=6]
 resource_name = "SkipButtonModulate"
 length = 3.0
 loop = true
@@ -53,15 +122,14 @@ tracks/0/keys = {
 }
 
 [sub_resource type="DynamicFont" id=1]
-size = 50
+size = 35
 use_filter = true
 font_data = ExtResource( 2 )
 
 [node name="TutorialControl" instance=ExtResource( 1 )]
 script = ExtResource( 4 )
 _buttonGroupName = "TutorialButton"
-_helpTip0 = "1. select two adjacent blocks to find matching colors"
-_helpTip1 = "2. click and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move"
+_helpTip1 = "2. press and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move"
 _helpTip3 = "4. after pairing all blocks of one color, you can match the remaining one with the colorful block"
 
 [node name="NextButton" parent="." index="0"]
@@ -81,20 +149,24 @@ margin_top = -23.0
 margin_bottom = -23.0
 
 [node name="AnimationPlayer" parent="." index="4"]
+anims/HelpButtonModulate = SubResource( 2 )
+anims/RESET = SubResource( 3 )
 anims/SkipButtonAppears = SubResource( 4 )
-anims/SkipButtonDissolve = SubResource( 3 )
-anims/SkipButtonModulate = SubResource( 2 )
+anims/SkipButtonDissolve = SubResource( 5 )
+anims/SkipButtonModulate = SubResource( 6 )
 
 [node name="SkipButton" type="TextureButton" parent="." index="5" groups=["TutorialButton"]]
-self_modulate = Color( 1, 1, 1, 0 )
+self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-margin_left = -82.5
-margin_top = -100.0
-margin_right = 82.5
-margin_bottom = -40.0
+margin_left = -69.0
+margin_top = -94.0
+margin_right = 69.0
+margin_bottom = -46.0
+texture_normal = ExtResource( 5 )
+expand = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -108,7 +180,7 @@ margin_left = -61.0
 margin_top = -28.5
 margin_right = 61.0
 margin_bottom = 28.5
-custom_colors/font_color = Color( 0.760784, 0.729412, 0.65098, 1 )
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
 custom_fonts/font = SubResource( 1 )
 text = "SKIP"
 align = 1

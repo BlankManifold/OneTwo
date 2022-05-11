@@ -170,6 +170,8 @@ margin_top = 0.0
 margin_right = -0.0600586
 margin_bottom = 0.0
 _buttonGroupName = "HelpButton"
+_helpTip0 = " 1. select two adjacent blocks to find matching colors"
+_helpTip1 = " 2. press and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move "
 
 [node name="BackgroundLayer" type="CanvasLayer" parent="."]
 layer = -2
