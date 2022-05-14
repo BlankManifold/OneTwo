@@ -33,7 +33,7 @@ Because of my ignorance in music/audio/font, I downloaded the following free ass
 * Sound effects at [https://mixkit.co/free-sound-effects/](https://mixkit.co/free-sound-effects/)
 
 
-## Progress Updates:
+## Progress Updates (till end of the jam):
 
 ### 18/04/22:
 
