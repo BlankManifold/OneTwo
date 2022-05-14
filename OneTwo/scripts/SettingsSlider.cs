@@ -13,8 +13,8 @@ namespace Main
         private Texture _zeroTexture;
 
 
-        private TextureRect _sliderRect;
-        public TextureRect SliderRect { get { return _sliderRect; } }
+        private TextureButton _sliderRect;
+        public TextureButton SliderRect { get { return _sliderRect; } }
         private TextureRect _sliderTextureRect;
         private AudioManager _audioManager;
 
@@ -34,7 +34,7 @@ namespace Main
         public override void _Ready()
         {
             _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
-            _sliderRect = GetNode<TextureRect>("SliderLine/SliderRect");
+            _sliderRect = GetNode<TextureButton>("SliderLine/SliderRect");
             _sliderTextureRect = _sliderRect.GetNode<TextureRect>("SliderTexture");
             _offsetX = _sliderRect.RectSize.x / 2;
             _auxVector.y = _sliderRect.RectPosition.y;

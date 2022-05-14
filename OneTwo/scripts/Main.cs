@@ -49,7 +49,12 @@ namespace Main
             Control topRef = (Control)GetTree().GetNodesInGroup("ReferenceTop")[0];
 
             float yConstraint = bottomRef.RectGlobalPosition.y - (topRef.RectGlobalPosition.y + topRef.RectSize.y);
-            _sizeConstraints = new Vector2(GetViewport().GetVisibleRect().Size.x + 200, yConstraint - 150);
+            _sizeConstraints = new Vector2(GetViewport().GetVisibleRect().Size.x - 100, yConstraint - 150);
+            
+            if (OS.HasTouchscreenUiHint())
+            {
+                //_sizeConstraints = _sizeConstraints - new Vector2(100,100);
+            }
             
             UpdateHighscore();
             _gameUI.DisableButtonsState(true);
@@ -205,11 +210,6 @@ namespace Main
         }
         public void InitGridAndHelpGrid()
         {
-            if (OS.HasTouchscreenUiHint())
-            {
-                _sizeConstraints = _sizeConstraints - new Vector2(100,0);
-            }
-
             Vector2 cellRatio = new Vector2(1, 1);
             Vector2 cellSize = new Vector2(64, 64);
             Vector2 cellBorder = new Vector2(10, 10);
@@ -222,7 +222,7 @@ namespace Main
             _gridControl.AddChild(_grid);
 
             RotateGrid();
-            _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, _sizeConstraints.x - 50, _sizeConstraints.y);
+            _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, _sizeConstraints.x - 50, _sizeConstraints.y - 50);
         }
 
         private void UpdateGridInfo()

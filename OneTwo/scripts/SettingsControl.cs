@@ -20,17 +20,17 @@ namespace Main
             _musicSlider = GetNode<SettingsSlider>("MusicSlider");
             _soundSlider = GetNode<SettingsSlider>("SoundSlider");
 
-            _musicSlider.SliderRect.Connect("mouse_entered", this, "_on_MusicRect_mouse_entered");
-            _soundSlider.SliderRect.Connect("mouse_entered", this, "_on_SoundRect_mouse_entered");
-            _musicSlider.SliderRect.Connect("mouse_exited", this, "_on_MusicRect_mouse_exited");
-            _soundSlider.SliderRect.Connect("mouse_exited", this, "_on_SoundRect_mouse_exited");
+            _musicSlider.SliderRect.Connect("button_down", this, "_on_MusicRect_button_down");
+            _soundSlider.SliderRect.Connect("button_down", this, "_on_SoundRect_button_down");
+            _musicSlider.SliderRect.Connect("button_up", this, "_on_MusicRect_button_up");
+            _soundSlider.SliderRect.Connect("button_up", this, "_on_SoundRect_button_up");
         }
 
         public override void _Input(InputEvent @event)
         {
             if (_active)
             {
-                if (_activeButton)
+                if (_currentSlider != null)
                 {
                     if (@event is InputEventMouseMotion)
                     {
@@ -39,41 +39,14 @@ namespace Main
                         @event.Dispose();
                         return;
                     }
-
-                    if (@event is InputEventMouseButton mouseButton && mouseButton.ButtonIndex == 1)
-                    {
-                        if (!mouseButton.IsPressed())
-                        {
-                            _activeButton = false;
-                            _currentSlider.ReleasedAction();
-                        }
-                    }
-
-                    @event.Dispose();
-                    return;
-                }
-
-                if (_currentSlider != null)
-                {
-                    if (@event is InputEventMouseButton mouseButton && mouseButton.ButtonIndex == 1)
-                    {
-                        if (mouseButton.IsPressed())
-                        {
-                            _activeButton = true;
-                            _clickedPositionX = _currentSlider.SliderRect.GetLocalMousePosition().x;
-                        }
-
-                        mouseButton.Dispose();
-                        return;
-                    }
-
-                    @event.Dispose();
-                    return;
                 }
 
                 @event.Dispose();
                 return;
             }
+
+            @event.Dispose();
+            return;
         }
 
         public override void DisableButtonsState(bool disabled)
@@ -94,23 +67,25 @@ namespace Main
             _soundSlider.SetRectPositionFromDB((float)settingsDict["SoundDB"]);
             _musicSlider.SetRectPositionFromDB((float)settingsDict["MusicDB"]);
         }
-        public void _on_MusicRect_mouse_entered()
+        public void _on_MusicRect_button_down()
         {
             _currentSlider = _musicSlider;
+            _clickedPositionX = _currentSlider.SliderRect.GetLocalMousePosition().x;
         }
-        public void _on_SoundRect_mouse_entered()
+        public void _on_SoundRect_button_down()
         {
             _currentSlider = _soundSlider;
+            _clickedPositionX = _currentSlider.SliderRect.GetLocalMousePosition().x;
         }
-        public void _on_MusicRect_mouse_exited()
+        public void _on_MusicRect_button_up()
         {
-            if (!_activeButton)
-                _currentSlider = null;
+            _currentSlider.ReleasedAction();
+            _currentSlider = null;
         }
-        public void _on_SoundRect_mouse_exited()
+        public void _on_SoundRect_button_up()
         {
-            if (!_activeButton)
-                _currentSlider = null;
+            _currentSlider.ReleasedAction();
+            _currentSlider = null;
         }
     }
 }
