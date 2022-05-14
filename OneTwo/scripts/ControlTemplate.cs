@@ -6,7 +6,7 @@ namespace Main
     public class ControlTemplate : Control
     {
         [Export]
-        private bool _active = false;
+        protected bool _active = false;
         public bool Active { get { return _active; } set { _active = value; } }
 
         [Export]

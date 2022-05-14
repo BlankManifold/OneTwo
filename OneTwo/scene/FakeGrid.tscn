@@ -8,10 +8,9 @@
 
 [node name="FakeGrid" type="Node2D"]
 script = ExtResource( 1 )
-_soundSelectDB = -5
-_soundSwapDB = -7
-_soundSwitchOffDB = -10
-_soundWinDB = -2
+_soundSelectDB = 5
+_soundSwapDB = 3
+_soundWinDB = 2
 _soundSelect = ExtResource( 2 )
 _soundWin = ExtResource( 5 )
 _soundSwap = ExtResource( 4 )

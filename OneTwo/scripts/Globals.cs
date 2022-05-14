@@ -5,6 +5,10 @@ using Godot;
 
 namespace Globals
 {
+    public struct GameInfo
+    {
+        public static string Version = "0.4.1"; 
+    }
     public static class PackedScenes
     {
         public static PackedScene RealGridScene = (PackedScene)ResourceLoader.Load("res://scene/RealGrid.tscn");

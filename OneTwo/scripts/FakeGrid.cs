@@ -6,11 +6,11 @@ using BoolMatrix = Godot.Collections.Array<Godot.Collections.Array<bool>>;
 namespace Main
 {
     public class FakeGrid : Node2D
-    {   
+    {
         protected AudioManager _audioManager;
-        public AudioManager AudioManager { get {return _audioManager;}}
-        
-        
+        public AudioManager AudioManager { get { return _audioManager; } }
+
+
         [Export]
         public int _soundSelectDB;
         [Export]
@@ -22,13 +22,13 @@ namespace Main
 
         [Export]
         private AudioStream _soundSelect;
-        
+
         [Export]
         private AudioStream _soundWin;
-        
+
         [Export]
         private AudioStream _soundSwap;
-                
+
         [Export]
         private AudioStream _soundSwitchOff;
 
@@ -58,17 +58,17 @@ namespace Main
         protected List<int> _colorsAuxList;
 
         protected PackedScene _blockScene;
-        public PackedScene BlockScene { get { return _blockScene; }}
+        public PackedScene BlockScene { get { return _blockScene; } }
         protected Node2D _blocksContainer;
         protected Block[,] _blocksMatrix;
-        protected List<Block> _blocks = new List<Block>(){};
+        protected List<Block> _blocks = new List<Block>() { };
         protected Tween _tween;
         public Tween Tween { get { return _tween; } }
 
         protected List<Block> _auxBlocks = new List<Block>() { };
-        
 
-        public void Init(bool offMovable, Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, int xConstraint, bool animateGeneration = true, List<int> colorsAuxList = null)
+
+        public void Init(bool offMovable, Vector2 gridSize, Vector2 cellSize, Vector2 cellBorder, float xConstraint, float yConstraint, bool animateGeneration = true, List<int> colorsAuxList = null)
         {
             _offMovable = offMovable;
             _gridSize = gridSize;
@@ -78,19 +78,28 @@ namespace Main
             _animateGeneration = animateGeneration;
             _colorsAuxList = colorsAuxList;
 
-            SetGridExtent(xConstraint);
+            SetGridExtent(xConstraint, yConstraint);
             Vector2 centerCoords = _gridSize / 2f - 0.5f * Vector2.One;
 
             _offset = (_cellSize + _cellBorder) * centerCoords;
 
         }
-        public void SetGridExtent(int xConstraint)
+        public void SetGridExtent(float xConstraint, float yConstraint)
         {
             float xMaxSize = xConstraint / _gridSize[0] - _cellBorder.x;
             float factor = xMaxSize / _cellSize.x;
             _cellSize *= factor;
 
             _gridExtent = _gridSize * (_cellSize + _cellBorder) - _cellBorder;
+
+            if (_gridExtent.y > yConstraint)
+            {
+                float yMaxSize = yConstraint / _gridSize[1] - _cellBorder.y;
+                factor = yMaxSize / _cellSize.y;
+                _cellSize *= factor;
+
+                _gridExtent = _gridSize * (_cellSize + _cellBorder) - _cellBorder;
+            }
         }
 
 
@@ -120,10 +129,10 @@ namespace Main
                     return _soundSwap;
                 case "Win":
                     return _soundWin;
-                    
+
                 default:
                     return null;
-                    
+
             }
         }
         public Block GetBlock(Vector2 cellCoords)
@@ -154,7 +163,7 @@ namespace Main
 
         public List<Block> GetRow(int row)
         {
-            List<Block> blocks = new List<Block>(){};
+            List<Block> blocks = new List<Block>() { };
             for (int i = 0; i < _gridSize.x; i++)
             {
                 blocks.Add(_blocksMatrix[row, i]);

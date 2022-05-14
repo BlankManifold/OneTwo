@@ -52,7 +52,7 @@ __meta__ = {
 _active = true
 _buttonGroupName = "GameUIButton"
 
-[node name="RestartButton" type="TextureButton" parent="." groups=["GameUIButton"]]
+[node name="RestartButton" type="TextureButton" parent="." groups=["GameUIButton", "ReferenceBottom"]]
 self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
 anchor_left = 0.5
 anchor_top = 1.0
@@ -86,6 +86,9 @@ rect_pivot_offset = Vector2( 28, 28 )
 mouse_filter = 2
 texture = ExtResource( 6 )
 expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="SettingsButton" type="TextureButton" parent="." groups=["GameUIButton"]]
 self_modulate = Color( 0.945098, 0.937255, 0.894118, 1 )
@@ -156,7 +159,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MovesLabel" type="Label" parent="."]
+[node name="MovesLabel" type="Label" parent="." groups=["ReferenceTop"]]
 anchor_left = 0.5
 anchor_right = 0.5
 margin_left = -148.0

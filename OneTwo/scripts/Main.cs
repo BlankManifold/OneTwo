@@ -13,13 +13,15 @@ namespace Main
         private Tween _tween;
         private int _highscore = -1;
         private Label _highscoreLabel;
+        private Vector2 _sizeConstraints;
 
         private AudioManager _audioManager;
         private AudioStreamPlayer _mainAudioPlayer;
         private AnimationPlayer _animationPlayer;
         private GameUI _gameUI;
 
-        private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary { { "MusicOn", true }, { "SoundOn", true }, { "Played", false } };
+        private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary() { { "MusicDB", 0f }, { "SoundDB", 0f },{ "MusicOn", true }, { "SoundOn", true }, { "Played", false}, {"Version", "0.4.1"}};
+
 
 
         [Signal]
@@ -41,25 +43,25 @@ namespace Main
             _tween = GetNode<Tween>("MainTween");
             _audioManager = GetNode<AudioManager>("AudioManager");
             _mainAudioPlayer = _audioManager.GetNode<AudioStreamPlayer>("MainAudioPlayer");
-
             _highscoreLabel = _settingsControl.GetNode<Label>("HighscoreLabel");
-            UpdateHighscore();
+            
+            Control bottomRef = (Control)GetTree().GetNodesInGroup("ReferenceBottom")[0];
+            Control topRef = (Control)GetTree().GetNodesInGroup("ReferenceTop")[0];
 
+            float yConstraint = bottomRef.RectGlobalPosition.y - (topRef.RectGlobalPosition.y + topRef.RectSize.y);
+            _sizeConstraints = new Vector2(GetViewport().GetVisibleRect().Size.x + 200, yConstraint - 150);
+            
+            UpdateHighscore();
             _gameUI.DisableButtonsState(true);
             _tutorialControl.DisableButtonsState(true);
-
             InitSettings();
         }
 
         private void InitSettings()
         {
             _settingsDict = SaveManager.LoadSettings();
-
-            _audioManager.SoundOn = (bool)_settingsDict["SoundOn"];
-            _audioManager.MusicOn = (bool)_settingsDict["MusicOn"];
-
-            _settingsControl.GetNode<TextureButton>("MusicRect/MusicOnButton").Pressed = !_audioManager.MusicOn;
-            _settingsControl.GetNode<TextureButton>("SoundRect/SoundOnButton").Pressed = !_audioManager.SoundOn;
+            _audioManager.SetUpAudio(_settingsDict);
+            _settingsControl.SetUpAudio(_settingsDict);
         }
 
         public void _on_GameUI_button_pressed(string buttonName)
@@ -96,31 +98,9 @@ namespace Main
         {
             switch (buttonName)
             {
-                case "SoundOnButton":
-                    _audioManager.SoundOn = !_audioManager.SoundOn;
-                    _settingsDict["SoundOn"] = _audioManager.SoundOn;
-                    SaveManager.SaveSettings(_settingsDict);
-
-                    break;
-
-                case "MusicOnButton":
-                    _audioManager.MusicOn = !_audioManager.MusicOn;
-
-                    _settingsDict["MusicOn"] = _audioManager.MusicOn;
-                    SaveManager.SaveSettings(_settingsDict);
-
-                    if (_audioManager.MusicOn)
-                    {
-                        _mainAudioPlayer.Play();
-                    }
-                    else
-                    {
-                        _mainAudioPlayer.Stop();
-                    }
-
-                    break;
-
                 case "BackButton":
+                    UpdateAudioSettings();
+                    SaveManager.SaveSettings(_settingsDict);
                     ChangePanel(_mainControl, _settingsControl);
                     break;
             }
@@ -151,16 +131,16 @@ namespace Main
             {
                 case "Play":
 
-                    if ((bool)_settingsDict["MusicOn"])
+                    if (_audioManager.MusicOn)
                     {
-                        _tween.InterpolateProperty(_mainAudioPlayer, "volume_db", -40, -10, 4);
+                        _tween.InterpolateProperty(_mainAudioPlayer, "volume_db", -40f, (float)_settingsDict["MusicDB"]+ AudioManager.MusicBaseDB, 4);
                         _tween.Start();
+                        _mainAudioPlayer.VolumeDb = -40;
                         _mainAudioPlayer.Play();
                     }
 
                     if (!SaveManager.AlreadyPlayed())
                     {
-                        int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
                         Vector2 cellRatio = new Vector2(1, 1);
                         Vector2 cellSize = new Vector2(64, 64);
                         Vector2 cellBorder = new Vector2(10, 10);
@@ -169,14 +149,14 @@ namespace Main
                         _settingsDict["Played"] = true;
                         SaveManager.SaveSettings(_settingsDict);
 
-                        _tutorialControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint -50);
+                        _tutorialControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, _sizeConstraints.x, _sizeConstraints.y);
                         _tutorialControl.DisableButtonsState(false);
 
                         _animationPlayer.Play("PlayTutorial");
                         await ToSignal(this, nameof(PlayTutorial));
-                        
+
                         _tutorialControl.StartHelpTween(0f);
-                    
+
                         break;
                     }
 
@@ -225,11 +205,9 @@ namespace Main
         }
         public void InitGridAndHelpGrid()
         {
-            int sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 200;
-
             if (OS.HasTouchscreenUiHint())
             {
-                sizeConstraint = (int)GetViewport().GetVisibleRect().Size.x - 100;
+                _sizeConstraints = _sizeConstraints - new Vector2(100,0);
             }
 
             Vector2 cellRatio = new Vector2(1, 1);
@@ -237,14 +215,14 @@ namespace Main
             Vector2 cellBorder = new Vector2(10, 10);
             Vector2 gridSize = new Vector2(4, 6);
 
-            _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, sizeConstraint, true);
+            _grid.Init(true, gridSize, cellSize * cellRatio, cellBorder, _sizeConstraints.x, _sizeConstraints.y, true);
             UpdateGridInfo();
 
             _grid.GridState = Globals.GRIDSTATE.TITLESCREEN;
             _gridControl.AddChild(_grid);
 
             RotateGrid();
-            _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, sizeConstraint - 50);
+            _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, _sizeConstraints.x - 50, _sizeConstraints.y);
         }
 
         private void UpdateGridInfo()
@@ -264,6 +242,14 @@ namespace Main
                     _highscoreLabel.Text = $"HIGHSCORE: 99+";
                 }
             }
+        }
+
+        private void UpdateAudioSettings()
+        {
+            _settingsDict["MusicOn"] = _audioManager.MusicOn;
+            _settingsDict["MusicDB"] = _audioManager.MusicDB;
+            _settingsDict["SoundOn"] = _audioManager.SoundOn;
+            _settingsDict["SoundDB"] = _audioManager.SoundDB;
         }
 
 
