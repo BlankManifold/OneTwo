@@ -136,6 +136,7 @@ tracks/2/keys = {
 [node name="Main" type="Node2D" groups=["Main"]]
 z_as_relative = false
 script = ExtResource( 1 )
+_screenshotOn = true
 
 [node name="MainTween" type="Tween" parent="."]
 

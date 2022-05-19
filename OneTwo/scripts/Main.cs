@@ -20,6 +20,9 @@ namespace Main
         private AnimationPlayer _animationPlayer;
         private GameUI _gameUI;
 
+        [Export] 
+        private bool _screenshotOn = false;
+
         private Godot.Collections.Dictionary _settingsDict = new Godot.Collections.Dictionary() { { "MusicDB", 0f }, { "SoundDB", 0f },{ "MusicOn", true }, { "SoundOn", true }, { "Played", false}, {"Version", "0.4.1"}};
 
 
@@ -29,6 +32,14 @@ namespace Main
 
         public override void _Ready()
         {
+            if (_screenshotOn)
+            {
+                PackedScene screenshotManager = (PackedScene)ResourceLoader.Load("res://scene/ScreenshotManager.tscn");
+                AddChild((ScreenshotManager)screenshotManager.Instance());
+                Directory dir = new Directory();
+                if (!dir.DirExists("user://screenshots"))
+                    dir.MakeDir("user://screenshots");
+            }
 
             GetNode<ColorRect>("BackgroundLayer/ColorRect").Color = Globals.ColorManager.CurrentColorPalette.BackgroundColorMain;
             GetNode<TextureRect>("BackgroundLayer/TextureRect").Modulate = new Color(Globals.ColorManager.CurrentColorPalette.BackgroundColorSecondary, 0.5f);
@@ -61,6 +72,7 @@ namespace Main
             _tutorialControl.DisableButtonsState(true);
             InitSettings();
         }
+
 
         private void InitSettings()
         {
