@@ -248,33 +248,33 @@ namespace Main
 
             return delay + 2 * scaleTime + swapTime;
         }
-        public static float SlidePanelSwap(Tween tween, ControlTemplate fromControl, ControlTemplate toControl, float delay = 0.0f)
+        public static float SlidePanelSwap(Tween tween, ControlTemplate movingControl, ControlTemplate referenceControl, float delay = 0.0f)
         {
             float scaleFactor = 1.1f;
             float scaleTime = 0.2f;
             float swapTime = 0.4f;
 
-            float fromPos = fromControl.RectPosition.x;
-            float toPos = toControl.RectPosition.x;
-            Vector2 finalScale = fromControl.RectScale * scaleFactor;
+            float fromPos = movingControl.RectPosition.x;
+            float toPos = referenceControl .RectPosition.x;
+            Vector2 finalScale = movingControl.RectScale * scaleFactor;
             // int finalLayer = -1;
-
-            if (!fromControl.Active)
+ 
+            if (!movingControl.Active)
             {
                 //finalLayer = 1;
-                finalScale = fromControl.RectScale / scaleFactor;
+                finalScale = movingControl.RectScale / scaleFactor;
             }
 
-            // if (fromControl.GetParent() is CanvasLayer fromLayer && toControl.GetParent() is CanvasLayer toLayer)
+            // if (movingControl.GetParent() is CanvasLayer fromLayer && toControl.GetParent() is CanvasLayer toLayer)
             // {
             //     tween.InterpolateCallback(fromLayer, delay, "set", "layer", finalLayer);
             //     tween.InterpolateCallback(fromLayer, 2 * scaleTime + swapTime, "set", "layer", 0);
             // }
 
-            tween.InterpolateProperty(fromControl, "rect_scale", fromControl.RectScale, finalScale, scaleTime, Tween.TransitionType.Sine, delay: delay);
-            tween.InterpolateProperty(fromControl, "rect_scale", finalScale, fromControl.RectScale, scaleTime, Tween.TransitionType.Sine, delay: delay + scaleTime + swapTime);
+            tween.InterpolateProperty(movingControl, "rect_scale", movingControl.RectScale, finalScale, scaleTime, Tween.TransitionType.Sine, delay: delay);
+            tween.InterpolateProperty(movingControl, "rect_scale", finalScale, movingControl.RectScale, scaleTime, Tween.TransitionType.Sine, delay: delay + scaleTime + swapTime);
 
-            tween.InterpolateProperty(fromControl, "rect_position:x", fromPos, toPos, swapTime, Tween.TransitionType.Sine, delay: delay + scaleTime);
+            tween.InterpolateProperty(movingControl, "rect_position:x", fromPos, toPos, swapTime, Tween.TransitionType.Sine, delay: delay + scaleTime);
 
             return delay + 2 * scaleTime + swapTime;
         }

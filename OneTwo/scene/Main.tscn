@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://scripts/Main.cs" type="Script" id=1]
 [ext_resource path="res://scene/SettingsControl.tscn" type="PackedScene" id=2]
@@ -10,6 +10,8 @@
 [ext_resource path="res://scene/TitleScreen.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scene/TutorialControl.tscn" type="PackedScene" id=9]
 [ext_resource path="res://assets/mixkit-soap-bubble-sound-2925.wav" type="AudioStream" id=10]
+[ext_resource path="res://scene/StatsControl.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scripts/StatsManager.cs" type="Script" id=12]
 
 [sub_resource type="Animation" id=1]
 resource_name = "Play"
@@ -138,7 +140,8 @@ z_as_relative = false
 script = ExtResource( 1 )
 _screenshotOn = true
 
-[node name="MainTween" type="Tween" parent="."]
+[node name="StatsManager" type="Node" parent="." groups=["StatsManager"]]
+script = ExtResource( 12 )
 
 [node name="AudioManager" parent="." groups=["AudioManager"] instance=ExtResource( 7 )]
 _testSound = ExtResource( 10 )
@@ -176,6 +179,12 @@ _buttonGroupName = "HelpButton"
 _helpTip0 = " 1. select two adjacent blocks to find matching colors"
 _helpTip1 = " 2. press and drag to swap two adjacent blocks. Swapping after selecting will cost an extra move "
 
+[node name="StatsControl" parent="GridLayer" instance=ExtResource( 11 )]
+margin_left = -624.0
+margin_right = -624.0
+mouse_filter = 2
+_buttonGroupName = "StatsButton"
+
 [node name="BackgroundLayer" type="CanvasLayer" parent="."]
 layer = -2
 
@@ -207,5 +216,7 @@ anims/Play = SubResource( 1 )
 anims/PlayFromTutorial = SubResource( 4 )
 anims/PlayTutorial = SubResource( 3 )
 anims/RESET = SubResource( 2 )
+
+[node name="MainTween" type="Tween" parent="."]
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

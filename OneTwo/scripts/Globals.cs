@@ -7,7 +7,7 @@ namespace Globals
 {
     public struct GameInfo
     {
-        public static string Version = "0.4.1"; 
+        public static string Version = "0.4.2"; 
     }
     public static class PackedScenes
     {

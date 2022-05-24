@@ -17,6 +17,7 @@ namespace Main
         public Globals.GRIDSTATE GridState { get { return _gridState; } set { _gridState = value; } }
         private int _moves;
 
+        private StatsManager _statsManager;
         private Node2D _winLabel;
         public Node2D WinLabel { get { return _winLabel; } }
 
@@ -31,6 +32,7 @@ namespace Main
 
             _winLabel = GetParent().GetNode<Node2D>("WinLabel");
             _audioManager = (AudioManager)GetTree().GetNodesInGroup("AudioManager")[0];
+            _statsManager = (StatsManager)GetTree().GetNodesInGroup("StatsManager")[0];
             _tween = GetNode<Tween>("GridTween");
             _blocksContainer = GetNode<Node2D>("Blocks");
             _blockScene = Globals.PackedScenes.BlockScene;//(PackedScene)ResourceLoader.Load("res://scene/Block.tscn");
@@ -291,6 +293,7 @@ namespace Main
         }
         private void Win(float delay = 0.0f)
         {
+            _statsManager.UpdateStats(_moves);
             int oldHighscore = SaveManager.LoadHighscore();
             if (oldHighscore == -1 || oldHighscore > _moves)
             {
@@ -303,6 +306,10 @@ namespace Main
         }
         public async void Restart()
         {
+            if (_moves != 0 && _gridState != Globals.GRIDSTATE.WIN)
+            {
+                _statsManager.UpdateStats(-1);
+            }
 
             if (_gridState == Globals.GRIDSTATE.WIN)
             {

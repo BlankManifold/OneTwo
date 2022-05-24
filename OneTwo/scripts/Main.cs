@@ -6,6 +6,7 @@ namespace Main
     {
         private RealGrid _grid;
         private SettingsControl _settingsControl;
+        private StatsControl _statsControl;
         private MainControl _mainControl;
         private BaseTutorial _helpControl;
         private BaseTutorial _tutorialControl;
@@ -16,6 +17,7 @@ namespace Main
         private Vector2 _sizeConstraints;
 
         private AudioManager _audioManager;
+        private StatsManager _statsManager;
         private AudioStreamPlayer _mainAudioPlayer;
         private AnimationPlayer _animationPlayer;
         private GameUI _gameUI;
@@ -48,11 +50,13 @@ namespace Main
             _gridControl = GetNode<Control>("GridLayer/MainControl/GridControl");
             _gameUI = GetNode<GameUI>("GridLayer/MainControl/GameUI");
             _settingsControl = GetNode<SettingsControl>("GridLayer/SettingsControl");
+            _statsControl = GetNode<StatsControl>("GridLayer/StatsControl");
             _mainControl = GetNode<MainControl>("GridLayer/MainControl");
             _helpControl = GetNode<BaseTutorial>("GridLayer/HelpControl");
             _tutorialControl = GetNode<BaseTutorial>("GridLayer/TutorialControl");
             _tween = GetNode<Tween>("MainTween");
             _audioManager = GetNode<AudioManager>("AudioManager");
+            _statsManager = GetNode<StatsManager>("StatsManager");
             _mainAudioPlayer = _audioManager.GetNode<AudioStreamPlayer>("MainAudioPlayer");
             _highscoreLabel = _settingsControl.GetNode<Label>("HighscoreLabel");
             
@@ -79,7 +83,9 @@ namespace Main
             _settingsDict = SaveManager.LoadSettings();
             _audioManager.SetUpAudio(_settingsDict);
             _settingsControl.SetUpAudio(_settingsDict);
+            _statsManager.LoadStats();
         }
+
 
         public void _on_GameUI_button_pressed(string buttonName)
         {
@@ -102,7 +108,9 @@ namespace Main
 
                     UpdateHighscore();
 
-                    ChangePanel(_settingsControl, _mainControl);
+                    ChangePanel(_statsControl, _mainControl);
+                    // ChangePanel(_settingsControl, _mainControl);
+                    //PanelGoTo(_statsControl, _settingsControl);
                     break;
 
                 case "HelpButton":
@@ -119,6 +127,15 @@ namespace Main
                     UpdateAudioSettings();
                     SaveManager.SaveSettings(_settingsDict);
                     ChangePanel(_mainControl, _settingsControl);
+                    break;
+            }
+        }
+        public void _on_StatsControl_button_pressed(string buttonName)
+        {
+            switch (buttonName)
+            {
+                case "BackButton":
+                    ChangePanel(_mainControl, _statsControl);
                     break;
             }
         }
@@ -186,7 +203,6 @@ namespace Main
         {
             _gameUI.SetWinState(winning);
         }
-
         public void _on_AnimationPlayer_animation_finished(string animation)
         {
             if (animation == "Play" || animation == "PlayFromTutorial")
@@ -214,6 +230,12 @@ namespace Main
                 GetNode("GridLayer/TitleScreen").CallDeferred("queue_free");
             }
         }
+        public void _on_StatsManager_UpdatingStats(Godot.Collections.Dictionary statsDict, Godot.Collections.Dictionary movesDistributionDict)
+        {
+            _statsControl.UpdateStats(statsDict, movesDistributionDict);
+            SaveManager.SaveStats(statsDict);
+            SaveManager.SaveMovesDistribution(movesDistributionDict);
+        }
 
 
         public void RotateGrid()
@@ -237,6 +259,7 @@ namespace Main
             _helpControl.InstanceGrid(gridSize, cellSize, cellBorder, cellRatio, _sizeConstraints.x - 50, _sizeConstraints.y - 50);
         }
 
+
         private void UpdateGridInfo()
         {
             Globals.GridInfo.UpdateGridInfo(_grid.GridSize, _grid.CellSize, _grid.CellBorder, _grid.Offset);
@@ -255,7 +278,6 @@ namespace Main
                 }
             }
         }
-
         private void UpdateAudioSettings()
         {
             _settingsDict["MusicOn"] = _audioManager.MusicOn;
@@ -263,7 +285,6 @@ namespace Main
             _settingsDict["SoundOn"] = _audioManager.SoundOn;
             _settingsDict["SoundDB"] = _audioManager.SoundDB;
         }
-
 
 
         private async void ChangePanel(ControlTemplate controlIn, ControlTemplate controlOut)
@@ -282,6 +303,18 @@ namespace Main
 
             controlOut.UpdateState();
             controlIn.UpdateState();
+        }
+        private async void PanelGoTo(ControlTemplate controlMoving, ControlTemplate referenceControl)
+        {
+            TweenManager.SlidePanelSwap(_tween, controlMoving, referenceControl);
+
+            controlMoving.Visible = true;
+            //controlIn.DisableButtonsState(true);
+
+            TweenManager.Start(_tween);
+            await ToSignal(_tween, "tween_all_completed");
+
+            //controlIn.UpdateState();
         }
 
 

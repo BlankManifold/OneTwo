@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scene/SettingsSlider.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/soundOn.png" type="Texture" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://assets/musicOff.png" type="Texture" id=6]
 [ext_resource path="res://assets/musicOn.png" type="Texture" id=7]
 [ext_resource path="res://assets/soundOff.png" type="Texture" id=8]
+[ext_resource path="res://assets/block.png" type="Texture" id=9]
 
 [sub_resource type="DynamicFont" id=2]
 size = 18
@@ -53,7 +54,7 @@ margin_right = 64.5
 margin_bottom = -128.0
 custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
 custom_fonts/font = SubResource( 2 )
-text = "VERSION: 0.4.2"
+text = "VERSION: 0.5.1"
 align = 1
 valign = 1
 __meta__ = {
@@ -66,9 +67,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -91.0
-margin_top = 97.5
+margin_top = 169.5
 margin_right = 91.0
-margin_bottom = 126.5
+margin_bottom = 198.5
 custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
 custom_fonts/font = SubResource( 1 )
 align = 1
@@ -80,3 +81,37 @@ __meta__ = {
 [node name="BackButton" parent="." groups=["SettingsButton"] instance=ExtResource( 5 )]
 margin_left = -96.0
 margin_right = -40.0
+
+[node name="StatsButton" type="TextureButton" parent="." groups=["SettingsButton"]]
+self_modulate = Color( 0.529412, 0.45098, 0.45098, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -40.0
+margin_top = 232.0
+margin_right = 40.0
+margin_bottom = 312.0
+texture_normal = ExtResource( 7 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StatsRect" type="TextureRect" parent="StatsButton"]
+show_behind_parent = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -40.0
+margin_top = -40.0
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+rect_pivot_offset = Vector2( 40, 40 )
+texture = ExtResource( 9 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}

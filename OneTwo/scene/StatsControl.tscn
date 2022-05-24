@@ -1,0 +1,93 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scene/BackButton.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scripts/StatsControl.cs" type="Script" id=2]
+[ext_resource path="res://assets/Louis George Cafe Bold.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 25
+font_data = ExtResource( 3 )
+
+[node name="StatsControl" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+_buttonGroupName = "StatsButton"
+
+[node name="BackButton" parent="." groups=["StatsButton"] instance=ExtResource( 1 )]
+margin_left = -90.0
+margin_top = -91.9999
+margin_right = -34.0
+margin_bottom = -36.0
+
+[node name="BestSingle" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -67.0
+margin_top = -214.5
+margin_right = 67.0
+margin_bottom = -185.5
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "Best single: "
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GamesPlayed" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -86.0
+margin_top = -158.5
+margin_right = 86.0
+margin_bottom = -129.5
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "Games played:"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GamesFinished" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -86.5
+margin_top = -94.5
+margin_right = 86.5
+margin_bottom = -65.5
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "Game finished:"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BestMovesMean5" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -91.0
+margin_top = -30.5
+margin_right = 91.0
+margin_bottom = -1.5
+custom_colors/font_color = Color( 0.643137, 0.596078, 0.47451, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "Best mean of 5: "
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
